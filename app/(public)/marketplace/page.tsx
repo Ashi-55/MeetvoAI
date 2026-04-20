@@ -2,6 +2,8 @@ import { MarketplaceView } from "@/components/marketplace/MarketplaceView";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import type { Agent } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function MarketplacePage({
   searchParams,
 }: {

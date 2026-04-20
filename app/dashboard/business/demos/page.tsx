@@ -5,6 +5,8 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { mapBuilderProfileIdsToNames } from "@/lib/dashboard-display";
 import type { DemoBooking } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function BusinessDemosPage() {
   const supabase = createSupabaseServerClient();
   const {

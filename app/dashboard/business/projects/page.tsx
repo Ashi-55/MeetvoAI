@@ -2,6 +2,8 @@ import { DealPipeline } from "@/components/dashboard/DealPipeline";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import type { Project } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function BusinessProjectsPage() {
   const supabase = createSupabaseServerClient();
   const {

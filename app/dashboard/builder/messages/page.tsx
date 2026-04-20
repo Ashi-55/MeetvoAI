@@ -5,6 +5,8 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { mapProfileIdsToNames } from "@/lib/dashboard-display";
 import type { Conversation } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function BuilderMessagesPage() {
   const supabase = createSupabaseServerClient();
   const {
