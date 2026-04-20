@@ -1,9 +1,8 @@
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { LoginForm } from "./LoginForm";
 
-export const dynamic = "force-dynamic";
-
-export default function LoginPage() {
+function LoginPageContent() {
   return (
     <Suspense
       fallback={
@@ -14,3 +13,7 @@ export default function LoginPage() {
     </Suspense>
   );
 }
+
+export default dynamic(() => Promise.resolve(LoginPageContent), {
+  ssr: false,
+});

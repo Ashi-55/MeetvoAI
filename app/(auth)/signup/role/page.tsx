@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Building2, Code2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,9 +10,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import type { UserRole } from "@/types";
 
-export const dynamic = "force-dynamic";
-
-export default function SignupRolePage() {
+function SignupRolePageContent() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const supabase = createSupabaseBrowserClient();
@@ -121,3 +120,7 @@ export default function SignupRolePage() {
     </main>
   );
 }
+
+export default dynamic(() => Promise.resolve(SignupRolePageContent), {
+  ssr: false,
+});

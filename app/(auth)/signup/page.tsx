@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,8 +13,6 @@ import { Progress } from "@/components/ui/Progress";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { signupSchema, type SignupValues } from "@/lib/validations/auth";
 
-export const dynamic = "force-dynamic";
-
 function strengthScore(password: string): number {
   let s = 0;
   if (password.length >= 8) s += 25;
@@ -23,7 +22,7 @@ function strengthScore(password: string): number {
   return s;
 }
 
-export default function SignupPage() {
+export default function SignupPageContent() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
@@ -186,3 +185,7 @@ export default function SignupPage() {
     </main>
   );
 }
+
+export default dynamic(() => Promise.resolve(SignupPageContent), {
+  ssr: false,
+});
