@@ -22,7 +22,7 @@ function strengthScore(password: string): number {
   return s;
 }
 
-export default function SignupPageContent() {
+function SignupPageContent() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
