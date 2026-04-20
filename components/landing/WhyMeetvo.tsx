@@ -40,9 +40,7 @@ export function WhyMeetvo() {
               key={it.title}
               className="rounded-2xl border border-border bg-bg-card p-8"
             >
-              <div
-                className={`inline-flex rounded-lg p-3 ${it.color}`}
-              >
+              <div className={`inline-flex rounded-lg p-3 ${it.color}`}>
                 <it.icon className="h-6 w-6" />
               </div>
               <h3 className="mt-4 font-display text-lg font-semibold text-foreground">

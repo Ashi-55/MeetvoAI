@@ -41,10 +41,11 @@ export default async function BuilderMessagesPage() {
     .eq("builder_id", bp.id)
     .order("last_message_at", { ascending: false });
 
-  const conversations = (rows as Pick<
-    Conversation,
-    "id" | "last_message_at" | "business_id" | "created_at"
-  >[]) ?? [];
+  const conversations =
+    (rows as Pick<
+      Conversation,
+      "id" | "last_message_at" | "business_id" | "created_at"
+    >[]) ?? [];
 
   const businessNames = await mapProfileIdsToNames(
     supabase,
@@ -69,7 +70,7 @@ export default async function BuilderMessagesPage() {
           action={{ href: "/dashboard/builder/projects", label: "My projects" }}
         />
       ) : (
-        <ul className="divide-y divide-border rounded-lg border border-border bg-bg-card/40">
+        <ul className="bg-bg-card/40 divide-y divide-border rounded-lg border border-border">
           {conversations.map((c) => (
             <li
               key={c.id}

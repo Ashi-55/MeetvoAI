@@ -19,11 +19,11 @@ export function Navbar() {
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 z-50 w-full border-b border-border/50 bg-bg-primary/75 backdrop-blur-[20px]"
+      className="border-border/50 bg-bg-primary/75 fixed top-0 z-50 w-full border-b backdrop-blur-[20px]"
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-blue/20 font-display text-sm font-bold text-accent-blue">
+          <span className="bg-accent-blue/20 flex h-8 w-8 items-center justify-center rounded-lg font-display text-sm font-bold text-accent-blue">
             M
           </span>
           <span className="font-display text-sm font-semibold text-foreground">
@@ -80,7 +80,10 @@ export function Navbar() {
             <Link href="/login" className="text-sm">
               Sign In
             </Link>
-            <Link href="/signup" className="text-sm font-medium text-accent-blue">
+            <Link
+              href="/signup"
+              className="text-sm font-medium text-accent-blue"
+            >
               Get Started
             </Link>
           </div>

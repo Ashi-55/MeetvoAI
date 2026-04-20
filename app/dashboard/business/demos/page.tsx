@@ -34,7 +34,10 @@ export default async function BusinessDemosPage() {
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-foreground-secondary">
           Live demos you book with builders appear here. Book from the public{" "}
-          <Link href="/marketplace" className="text-accent-blue hover:underline">
+          <Link
+            href="/marketplace"
+            className="text-accent-blue hover:underline"
+          >
             marketplace
           </Link>{" "}
           or{" "}
@@ -54,7 +57,7 @@ export default async function BusinessDemosPage() {
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-border bg-bg-secondary/80 text-xs uppercase text-foreground-muted">
+            <thead className="bg-bg-secondary/80 border-b border-border text-xs uppercase text-foreground-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Builder</th>
                 <th className="px-4 py-3 font-medium">Scheduled</th>

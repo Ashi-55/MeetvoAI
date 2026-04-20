@@ -10,7 +10,7 @@ export function DashboardEmptyState({
   action?: { href: string; label: string };
 }) {
   return (
-    <div className="mx-auto mt-10 max-w-lg rounded-xl border border-dashed border-border bg-bg-secondary/30 p-10 text-center">
+    <div className="bg-bg-secondary/30 mx-auto mt-10 max-w-lg rounded-xl border border-dashed border-border p-10 text-center">
       <p className="font-medium text-foreground">{title}</p>
       <p className="mt-2 text-sm leading-relaxed text-foreground-secondary">
         {description}

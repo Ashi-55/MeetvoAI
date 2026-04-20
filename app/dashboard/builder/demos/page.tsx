@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { format } from "date-fns";
 import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
@@ -68,7 +67,7 @@ export default async function BuilderDemosPage() {
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-border bg-bg-secondary/80 text-xs uppercase text-foreground-muted">
+            <thead className="bg-bg-secondary/80 border-b border-border text-xs uppercase text-foreground-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Business</th>
                 <th className="px-4 py-3 font-medium">Scheduled</th>

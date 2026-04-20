@@ -159,7 +159,8 @@ export async function POST(request: Request) {
               maxOutputTokens: 768,
             },
           });
-          const analysisResult = await analysisChat.sendMessageStream(analysisPrompt);
+          const analysisResult =
+            await analysisChat.sendMessageStream(analysisPrompt);
           for await (const chunk of analysisResult.stream) {
             const text = chunk.text();
             if (text) {

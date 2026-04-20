@@ -6,7 +6,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-blue/20 font-display text-sm font-bold text-accent-blue">
+            <span className="bg-accent-blue/20 flex h-8 w-8 items-center justify-center rounded-lg font-display text-sm font-bold text-accent-blue">
               M
             </span>
             <span className="font-display font-semibold">MeetvoAI</span>

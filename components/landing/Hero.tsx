@@ -34,12 +34,12 @@ export function Hero() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8 inline-flex items-center rounded-full border border-accent-orange/40 bg-bg-card/80 px-4 py-1.5 text-xs font-medium text-accent-orange shadow-[0_0_24px_rgba(245,158,11,0.15)]"
+        className="border-accent-orange/40 bg-bg-card/80 mb-8 inline-flex items-center rounded-full border px-4 py-1.5 text-xs font-medium text-accent-orange shadow-[0_0_24px_rgba(245,158,11,0.15)]"
       >
-        ✦ India's First AI Automation Marketplace
+        ✦ India&apos;s First AI Automation Marketplace
       </motion.div>
 
-      <h1 className="text-center font-display font-bold tracking-tight text-foreground [font-size:clamp(2.5rem,8vw,5.5rem)] leading-[1.05]">
+      <h1 className="text-center font-display font-bold leading-[1.05] tracking-tight text-foreground [font-size:clamp(2.5rem,8vw,5.5rem)]">
         <span className="block">
           {line1.map((w, i) => (
             <motion.span
@@ -95,7 +95,7 @@ export function Hero() {
         </Link>
         <Link
           href="/signup"
-          className="inline-flex h-12 items-center rounded-xl border border-foreground/30 px-8 text-sm font-semibold text-foreground transition hover:bg-foreground hover:text-bg-primary"
+          className="border-foreground/30 inline-flex h-12 items-center rounded-xl border px-8 text-sm font-semibold text-foreground transition hover:bg-foreground hover:text-bg-primary"
         >
           Start Building Free
         </Link>
@@ -129,7 +129,7 @@ export function Hero() {
         </div>
         <div className="space-y-3 rounded-lg bg-bg-secondary p-4 text-sm">
           <div className="flex justify-end">
-            <span className="rounded-2xl bg-accent-blue/90 px-3 py-2 text-white">
+            <span className="bg-accent-blue/90 rounded-2xl px-3 py-2 text-white">
               Build a landing page for my café
             </span>
           </div>

@@ -74,7 +74,7 @@ export function LoginForm() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-bg-primary px-4 py-16 text-foreground">
       <div className="mb-10 flex items-center gap-2">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-blue/20 font-display text-xl font-bold text-accent-blue">
+        <span className="bg-accent-blue/20 flex h-10 w-10 items-center justify-center rounded-xl font-display text-xl font-bold text-accent-blue">
           M
         </span>
         <span className="font-display text-xl font-semibold">MeetvoAI</span>
@@ -150,8 +150,8 @@ export function LoginForm() {
           Continue with Google
         </Button>
         <p className="mt-4 text-center text-xs text-foreground-muted">
-          If you just signed up, open the confirmation email from Supabase before
-          signing in.
+          If you just signed up, open the confirmation email from Supabase
+          before signing in.
         </p>
         <p className="mt-8 text-center text-sm text-foreground-secondary">
           Don&apos;t have an account?{" "}

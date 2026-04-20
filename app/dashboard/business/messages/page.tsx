@@ -20,10 +20,11 @@ export default async function BusinessMessagesPage() {
     .eq("business_id", user.id)
     .order("last_message_at", { ascending: false });
 
-  const conversations = (rows as Pick<
-    Conversation,
-    "id" | "last_message_at" | "builder_id" | "created_at"
-  >[]) ?? [];
+  const conversations =
+    (rows as Pick<
+      Conversation,
+      "id" | "last_message_at" | "builder_id" | "created_at"
+    >[]) ?? [];
 
   const builderNames = await mapBuilderProfileIdsToNames(
     supabase,
@@ -50,7 +51,7 @@ export default async function BusinessMessagesPage() {
           action={{ href: "/builders", label: "Browse builders" }}
         />
       ) : (
-        <ul className="divide-y divide-border rounded-lg border border-border bg-bg-card/40">
+        <ul className="bg-bg-card/40 divide-y divide-border rounded-lg border border-border">
           {conversations.map((c) => (
             <li
               key={c.id}
@@ -67,8 +68,7 @@ export default async function BusinessMessagesPage() {
                 </p>
               </div>
               <p className="text-sm text-foreground-secondary">
-                Last activity{" "}
-                {format(new Date(c.last_message_at), "PPp")}
+                Last activity {format(new Date(c.last_message_at), "PPp")}
               </p>
             </li>
           ))}
