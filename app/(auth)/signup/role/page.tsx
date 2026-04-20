@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import type { UserRole } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default function SignupRolePage() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);

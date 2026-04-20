@@ -12,6 +12,8 @@ import { Progress } from "@/components/ui/Progress";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { signupSchema, type SignupValues } from "@/lib/validations/auth";
 
+export const dynamic = "force-dynamic";
+
 function strengthScore(password: string): number {
   let s = 0;
   if (password.length >= 8) s += 25;
