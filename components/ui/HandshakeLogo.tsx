@@ -98,7 +98,10 @@ export function MeetvoLogo({ size = 'md', className }: LogoProps) {
       >
         <HandshakeIcon size={iconSize} className="text-white" />
       </div>
-      <span className={cn('font-extrabold tracking-tight', textSize, 'brand-roman')}>
+      <span
+        className={cn('font-extrabold tracking-tight', textSize, 'brand-roman')}
+        style={{ fontFamily: "'Cinzel', serif" }}
+      >
         <span className="text-brand">Meetvo</span>
         <span className="text-text">AI</span>
       </span>
