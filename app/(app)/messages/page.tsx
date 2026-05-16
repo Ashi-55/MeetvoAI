@@ -97,7 +97,7 @@ export default function MessagesPage() {
           {filteredConvs.map((conv) => {
             const isBuyer = conv.buyer_id === user?.id;
             const other = isBuyer ? (conv as unknown as Record<string, Record<string, string>>).builder : (conv as unknown as Record<string, Record<string, string>>).buyer;
-            const unread = isBuyer ? conv.buyer_unread : conv.builder_unread;
+            const unread = isBuyer ? (conv.buyer_unread ?? 0) : (conv.builder_unread ?? 0);
             return (
               <button key={conv.id} onClick={() => { setSelected(conv); setPaymentWarning(false); }}
                 className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-surface2 transition-colors border-b border-border ${selected?.id === conv.id ? 'bg-surface2' : ''}`}>
@@ -107,7 +107,7 @@ export default function MessagesPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center">
                     <span className="text-text text-sm font-semibold truncate">{other?.full_name}</span>
-                    <span className="text-text3 text-xs">{timeAgo(conv.last_message_at)}</span>
+                    <span className="text-text3 text-xs">{timeAgo(conv.last_message_at ?? '')}</span>
                   </div>
                   {(conv as unknown as Record<string, Record<string, string>>).agent?.name && (
                     <p className="text-text3 text-xs truncate">{(conv as unknown as Record<string, Record<string, string>>).agent?.name}</p>
@@ -147,7 +147,7 @@ export default function MessagesPage() {
                 {(() => {
                   const items: React.ReactNode[] = [];
                   for (const msg of messages) {
-                    const d = formatDate(msg.created_at);
+                    const d = formatDate(msg.created_at ?? '');
                     if (d !== prevDate) {
                       items.push(<p key={`d-${msg.id}`} className="text-center text-text3 text-xs py-3">{d}</p>);
                       prevDate = d;
@@ -160,7 +160,7 @@ export default function MessagesPage() {
                         <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                           <div className={`max-w-lg rounded-2xl px-4 py-2.5 ${isMine ? 'bg-brand text-white rounded-br-sm' : 'bg-surface3 text-text rounded-bl-sm'}`}>
                             <p className="text-sm leading-relaxed break-words">{msg.content}</p>
-                            <p className={`text-xs mt-0.5 ${isMine ? 'text-white/60' : 'text-text3'}`}>{formatTime(msg.created_at)}</p>
+                            <p className={`text-xs mt-0.5 ${isMine ? 'text-white/60' : 'text-text3'}`}>{formatTime(msg.created_at ?? '')}</p>
                           </div>
                         </div>
                       );

@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { createClient } from '@/lib/supabase/server'; // Adjusted to the correct export
-const supabase = createClient(); // Update the usage accordingly
-// const supabase = createSupabaseClient(); // This line has been removed to avoid redeclaration
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
+  const supabase = createClient();
   try {
     const { deal_id } = (await request.json()) as { deal_id: string };
 

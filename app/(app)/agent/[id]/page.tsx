@@ -224,11 +224,11 @@ export default function AgentDetailPage() {
               <h2 className="text-lg font-bold text-text mb-4">About the builder</h2>
               <div className="bg-surface border border-border rounded-xl p-5 flex items-start gap-4">
                 <div className="w-14 h-14 rounded-full bg-brand/20 flex items-center justify-center text-brand text-xl font-bold shrink-0">
-                  {builder.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                  {((builder.full_name ?? '').split(' ').map((n) => n[0]).join('') || '').slice(0, 2)}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-text">{builder.full_name}</h3>
+                    <h3 className="font-semibold text-text">{builder.full_name ?? 'Builder'}</h3>
                     {builderProfile.verification_status === 'verified' && <BadgeCheck size={16} className="text-blue" />}
                   </div>
                   <p className="text-text3 text-sm mb-2">{builderProfile.title}</p>
@@ -264,11 +264,11 @@ export default function AgentDetailPage() {
               {builder && (
                 <div className="pt-2 border-t border-border flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-brand/20 flex items-center justify-center text-brand text-sm font-bold">
-                    {builder.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                    {((builder.full_name ?? '').split(' ').map((n) => n[0]).join('') || '').slice(0, 2)}
                   </div>
                   <div>
                     <div className="flex items-center gap-1">
-                      <p className="text-text text-sm font-semibold">{builder.full_name}</p>
+                      <p className="text-text text-sm font-semibold">{builder.full_name ?? 'Builder'}</p>
                       {builderProfile?.verification_status === 'verified' && <BadgeCheck size={13} className="text-blue" />}
                     </div>
                     {builderProfile && (

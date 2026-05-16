@@ -331,17 +331,18 @@ export default function BuilderStudioPage() {
   const planClass = planBadge.className;
 
   const restoreBuild = (build: StudioBuild) => {
-    setMode(build.config_json?.mode || 'website');
+    const config = build.config_json as any;
+    setMode(config?.mode || 'website');
     setConfig(build.config_json);
-    setGeneratedHTML(build.config_json?.generated_html || build.config_json?.html || '');
-    setWorkflow(build.config_json?.workflow || null);
+    setGeneratedHTML(config?.generated_html || config?.html || '');
+    setWorkflow(config?.workflow || null);
     setBuildId(build.id);
-    setSubdomain(build.config_json?.deployment?.suggested_subdomain || '');
+    setSubdomain(config?.deployment?.suggested_subdomain || '');
     setPrompt(build.prompt || '');
     setOriginalPrompt(build.prompt || '');
-    setAgentName(build.config_json?.business_name || build.prompt?.slice(0, 40) || 'AI Agent');
-    setAgentDescription(build.config_json?.confirmation_message || 'Generated agent description');
-    setActiveTab(build.config_json?.mode === 'automation' ? 'workflow' : 'preview');
+    setAgentName(config?.business_name || build.prompt?.slice(0, 40) || 'AI Agent');
+    setAgentDescription(config?.confirmation_message || 'Generated agent description');
+    setActiveTab(config?.mode === 'automation' ? 'workflow' : 'preview');
     toast.success('Build restored from history.');
   };
 

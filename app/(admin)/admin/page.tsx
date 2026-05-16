@@ -21,11 +21,11 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && profile && !profile.is_admin) router.push('/');
+    if (!isLoading && profile && !(profile as any).is_admin) router.push('/');
   }, [profile, isLoading]);
 
   useEffect(() => {
-    if (profile?.is_admin) loadData();
+    if ((profile as any)?.is_admin) loadData();
   }, [profile]);
 
   async function loadData() {
@@ -74,7 +74,7 @@ export default function AdminPage() {
   }
 
   if (isLoading) return <div className="flex items-center justify-center h-screen text-text3">Loading...</div>;
-  if (!profile?.is_admin) return null;
+  if (!(profile as any)?.is_admin) return null;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -104,12 +104,12 @@ export default function AdminPage() {
                   <p className="text-text2 text-sm mt-1">{bl.title}</p>
                   {bl.linkedin_url && <a href={bl.linkedin_url} target="_blank" className="text-brand text-sm hover:underline">LinkedIn Profile</a>}
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {bl.specialties.slice(0, 4).map((s) => <span key={s} className="bg-surface2 text-text3 px-2 py-0.5 rounded text-xs">{s}</span>)}
+                    {(bl.specialties || []).slice(0, 4).map((s) => <span key={s} className="bg-surface2 text-text3 px-2 py-0.5 rounded text-xs">{s}</span>)}
                   </div>
-                  <p className="text-text3 text-xs mt-2">{bl.experience_years} years experience</p>
+                  <p className="text-text3 text-xs mt-2">{bl.experience_years ?? 0} years experience</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={() => { setSelectedBuilderId(bp.id); }}
+                  <button onClick={() => { setSelectedBuilderId(bp.id as string); }}
                     className="bg-green/20 hover:bg-green/30 border border-green/40 text-green rounded-lg px-3 py-1.5 text-sm font-medium flex items-center gap-1 transition-colors">
                     <Check size={14} /> Review
                   </button>
@@ -120,11 +120,11 @@ export default function AdminPage() {
                   <textarea value={verifyNotes} onChange={(e) => setVerifyNotes(e.target.value)} rows={2} placeholder="Verification notes (optional)..."
                     className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-3 py-2 text-text text-sm placeholder-text3 outline-none resize-none" />
                   <div className="flex gap-2">
-                    <button onClick={() => verifyBuilder(bp.id, 'verified', verifyNotes)} disabled={loading}
+                    <button onClick={() => verifyBuilder(bp.id as string, 'verified', verifyNotes)} disabled={loading}
                       className="bg-green/20 hover:bg-green/30 border border-green/40 text-green rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1.5 transition-colors disabled:opacity-50">
                       <Check size={14} /> Verify Builder
                     </button>
-                    <button onClick={() => verifyBuilder(bp.id, 'rejected', verifyNotes)} disabled={loading}
+                    <button onClick={() => verifyBuilder(bp.id as string, 'rejected', verifyNotes)} disabled={loading}
                       className="bg-red/10 hover:bg-red/20 border border-red/30 text-red rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-1.5 transition-colors disabled:opacity-50">
                       <X size={14} /> Reject
                     </button>
@@ -146,7 +146,7 @@ export default function AdminPage() {
                 <div>
                   <h3 className="font-semibold text-text">{order.title}</h3>
                   <p className="text-text3 text-sm">Buyer: {(order as unknown as Record<string, Record<string, string>>).buyer?.full_name} · Builder: {(order as unknown as Record<string, Record<string, string>>).builder?.full_name}</p>
-                  <p className="text-brand font-semibold mt-1">₹{order.total_amount.toLocaleString('en-IN')}</p>
+                  <p className="text-brand font-semibold mt-1">₹{(order.total_amount ?? 0).toLocaleString('en-IN')}</p>
                 </div>
               </div>
               {order.dispute_reason && (

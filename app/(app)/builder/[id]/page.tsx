@@ -49,7 +49,7 @@ export default function BuilderProfilePage() {
       convId = data?.id;
     }
     if (convId && profile) {
-      openChat({ conversationId: convId, participantId: id, participantName: profile.full_name, participantAvatar: profile.avatar_url, isVerified: builderProfile?.verification_status === 'verified', responseTimeHours: builderProfile?.response_time_hours || 24, isMinimised: false });
+      openChat({ id: convId, participantId: id, participantName: profile.full_name ?? '', participantAvatar: profile.avatar_url ?? null, isVerified: builderProfile?.verification_status === 'verified', responseTimeHours: builderProfile?.response_time_hours || 24, isMinimised: false });
     }
   }
 
@@ -62,7 +62,7 @@ export default function BuilderProfilePage() {
 
   if (!profile || !builderProfile) return <div className="text-center py-20 text-text3">Builder not found</div>;
 
-  const initials = profile.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2);
+  const initials = ((profile.full_name ?? '').split(' ').map((n) => n[0]).join('') || '').slice(0, 2);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
@@ -94,7 +94,7 @@ export default function BuilderProfilePage() {
           </button>
         </div>
         <div className="flex flex-wrap gap-2 mt-5">
-          {builderProfile.specialties.slice(0, 4).map((s) => (
+          {(builderProfile.specialties || []).slice(0, 4).map((s) => (
             <span key={s} className="bg-brand/10 text-brand border border-brand/20 px-3 py-1 rounded-full text-sm">{s}</span>
           ))}
         </div>
@@ -105,20 +105,20 @@ export default function BuilderProfilePage() {
         <p className="text-text2 leading-relaxed">{builderProfile.bio}</p>
       </div>
 
-      {builderProfile.skills.length > 0 && (
+      {(builderProfile.skills || []).length > 0 && (
         <div className="bg-surface border border-border rounded-xl p-6">
           <h2 className="text-lg font-bold text-text mb-4">Skills</h2>
           <div className="flex flex-wrap gap-2">
-            {builderProfile.skills.map((s) => <span key={s} className="bg-surface2 border border-border text-text2 px-3 py-1.5 rounded-lg text-sm">{s}</span>)}
+            {(builderProfile.skills || []).map((s) => <span key={s} className="bg-surface2 border border-border text-text2 px-3 py-1.5 rounded-lg text-sm">{s}</span>)}
           </div>
         </div>
       )}
 
-      {builderProfile.languages.length > 0 && (
+      {(builderProfile.languages || []).length > 0 && (
         <div className="bg-surface border border-border rounded-xl p-6">
           <h2 className="text-lg font-bold text-text mb-4">Languages</h2>
           <div className="flex flex-wrap gap-2">
-            {builderProfile.languages.map((l) => <span key={l} className="bg-surface2 border border-border text-text2 px-3 py-1.5 rounded-lg text-sm">{l}</span>)}
+            {(builderProfile.languages || []).map((l) => <span key={l} className="bg-surface2 border border-border text-text2 px-3 py-1.5 rounded-lg text-sm">{l}</span>)}
           </div>
         </div>
       )}

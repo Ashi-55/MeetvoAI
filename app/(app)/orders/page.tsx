@@ -137,7 +137,7 @@ export default function OrdersPage() {
             const counterpart = tab === 'buying'
               ? (order as unknown as Record<string, Record<string, string>>).builder?.full_name
               : ((order as unknown as Record<string, Record<string, string>>).buyer_profile?.business_name || (order as unknown as Record<string, Record<string, string>>).buyer?.full_name);
-            const stepIdx = getStepIndex(order.order_status);
+            const stepIdx = getStepIndex(order.order_status ?? '');
 
             return (
               <motion.div key={order.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -148,14 +148,14 @@ export default function OrdersPage() {
                     <p className="text-text3 text-sm mt-0.5">{tab === 'buying' ? 'Builder' : 'Buyer'}: {counterpart}</p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-brand font-bold">₹{order.total_amount.toLocaleString('en-IN')}</span>
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${STATUS_COLORS[order.order_status] || 'bg-surface3 text-text3'}`}>
-                      {order.order_status.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                    <span className="text-brand font-bold">₹{(order.total_amount ?? 0).toLocaleString('en-IN')}</span>
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${STATUS_COLORS[order.order_status ?? ''] || 'bg-surface3 text-text3'}`}>
+                      {(order.order_status ?? '').replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                     </span>
                   </div>
                 </div>
 
-                {['pending_payment', 'active', 'submitted', 'approved', 'completed'].includes(order.order_status) && (
+                {['pending_payment', 'active', 'submitted', 'approved', 'completed'].includes(order.order_status ?? '') && (
                   <div className="flex items-center gap-1 mb-4 overflow-x-auto">
                     {STEPS.map((step, i) => (
                       <div key={step} className="flex items-center gap-1 shrink-0">

@@ -50,16 +50,17 @@ export default function CheckoutPage() {
     if (!order || !user || !profile) return;
     setPaying(true);
     try {
+      const amount = order.total_amount ?? 0;
       const res = await fetch('/api/orders/create-razorpay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: id, amount: order.total_amount, requirements: data.requirements }),
+        body: JSON.stringify({ orderId: id, amount, requirements: data.requirements }),
       });
       const { razorpayOrderId, key } = await res.json();
 
       const rzp = new window.Razorpay({
         key,
-        amount: order.total_amount * 100,
+        amount: Math.round(amount * 100),
         currency: 'INR',
         name: 'MeetvoAI',
         description: order.title,
@@ -106,7 +107,7 @@ export default function CheckoutPage() {
     </div>
   );
 
-  const { breakdown } = calculatePlatformFee(order.deal_value);
+  const { breakdown } = calculatePlatformFee(order.deal_value ?? 0);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">

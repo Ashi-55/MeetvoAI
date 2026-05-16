@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 
-import { createClient } from '@supabase/supabase-js'; // or the correct export if different
-const supabaseServer = createClient(
-  process.env.SUPABASE_URL ?? '',
-  process.env.SUPABASE_ANON_KEY ?? ''
-); // Adjust as necessary
+import { createClient } from '@/lib/supabase/server';
 import { razorpay } from '@/lib/razorpay';
 
 export async function POST(request: Request) {
+  const supabase = createClient();
   try {
     const { offer_id, amount, business_id, builder_id } = (await request.json()) as {
       offer_id: string;
@@ -17,7 +14,7 @@ export async function POST(request: Request) {
       builder_id: string;
     };
 
-    const supabase = supabaseServer;
+    // supabase client created above using server helper
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
 

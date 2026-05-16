@@ -98,7 +98,7 @@ export function ChatPopup({ session, offsetIndex }: Props) {
   let prevDate = '';
   const grouped: Array<{ type: 'date'; date: string } | { type: 'msg'; msg: Message }> = [];
   for (const msg of messages) {
-    const d = formatDate(msg.created_at);
+    const d = formatDate(msg.created_at ?? '');
     if (d !== prevDate) { grouped.push({ type: 'date', date: d }); prevDate = d; }
     grouped.push({ type: 'msg', msg });
   }
@@ -126,8 +126,8 @@ export function ChatPopup({ session, offsetIndex }: Props) {
           </div>
           <p className="text-text3 text-xs">Replies within {session.responseTimeHours}h</p>
         </div>
-        <button onClick={() => minimiseChat(session.conversationId)} className="p-1.5 hover:bg-surface2 rounded-lg transition-colors text-text3 hover:text-text"><Minus size={16} /></button>
-        <button onClick={() => closeChat(session.conversationId)} className="p-1.5 hover:bg-surface2 rounded-lg transition-colors text-text3 hover:text-red"><X size={16} /></button>
+        <button onClick={() => minimiseChat(session.conversationId ?? session.id ?? '')} className="p-1.5 hover:bg-surface2 rounded-lg transition-colors text-text3 hover:text-text"><Minus size={16} /></button>
+        <button onClick={() => closeChat(session.conversationId ?? session.id ?? '')} className="p-1.5 hover:bg-surface2 rounded-lg transition-colors text-text3 hover:text-red"><X size={16} /></button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-1 max-h-80 min-h-48">
@@ -149,13 +149,13 @@ export function ChatPopup({ session, offsetIndex }: Props) {
           const msg = item.msg;
           const isMine = msg.sender_id === user?.id;
           if (msg.message_type === 'offer_card' && msg.offer_data) {
-            return <OfferCard key={msg.id} message={msg} isMine={isMine} conversationId={session.conversationId} />;
+            return <OfferCard key={msg.id} message={msg} isMine={isMine} conversationId={session.conversationId ?? session.id ?? ''} />;
           }
           return (
             <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] rounded-2xl px-3 py-2 ${isMine ? 'bg-brand text-white rounded-br-sm' : 'bg-surface3 text-text rounded-bl-sm'}`}>
                 <p className="text-sm leading-relaxed break-words">{msg.content}</p>
-                <p className={`text-xs mt-0.5 ${isMine ? 'text-white/60' : 'text-text3'}`}>{formatTime(msg.created_at)}</p>
+                <p className={`text-xs mt-0.5 ${isMine ? 'text-white/60' : 'text-text3'}`}>{formatTime(msg.created_at ?? '')}</p>
               </div>
             </div>
           );

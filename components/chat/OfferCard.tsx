@@ -19,7 +19,7 @@ export function OfferCard({ message, isMine, conversationId }: Props) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const offer = message.offer_data!;
-  const { platformFee, gst, total } = calculatePlatformFee(offer.price);
+  const { platformFee, gst, total } = calculatePlatformFee(offer.price ?? 0);
 
   async function acceptOffer() {
     if (!user) return;
@@ -62,8 +62,8 @@ export function OfferCard({ message, isMine, conversationId }: Props) {
         <div className="p-3 space-y-2">
           <p className="text-text text-sm leading-snug">{offer.description}</p>
           <div className="space-y-1 text-xs">
-            <div className="flex justify-between text-text2"><span>Price</span><span className="text-text font-medium">₹{offer.price.toLocaleString('en-IN')}</span></div>
-            <div className="flex justify-between text-text2"><span>Delivery</span><span className="text-text font-medium">{offer.delivery_days} days</span></div>
+            <div className="flex justify-between text-text2"><span>Price</span><span className="text-text font-medium">₹{(offer.price ?? 0).toLocaleString('en-IN')}</span></div>
+            <div className="flex justify-between text-text2"><span>Delivery</span><span className="text-text font-medium">{offer.delivery_days ?? 0} days</span></div>
             <div className="flex justify-between text-text3"><span>Platform fee (5%)</span><span>₹{platformFee.toLocaleString('en-IN')}</span></div>
             <div className="flex justify-between text-text3"><span>GST (18% on fee)</span><span>₹{gst.toLocaleString('en-IN')}</span></div>
             <div className="h-px bg-border my-1" />

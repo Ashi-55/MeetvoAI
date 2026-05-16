@@ -206,7 +206,7 @@ function BuilderHome() {
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-semibold text-text truncate">{agent.name}</h3>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${agent.status === 'published' ? 'bg-green/15 text-green' : agent.status === 'draft' ? 'bg-amber/15 text-amber' : 'bg-text3/15 text-text3'}`}>
-                        {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                        {(agent.status ?? 'unknown').charAt(0).toUpperCase() + (agent.status ?? 'unknown').slice(1)}
                       </span>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-text3">
@@ -216,7 +216,7 @@ function BuilderHome() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button onClick={() => router.push(`/agent/${agent.id}`)} className="text-xs px-3 py-1.5 bg-surface3 hover:bg-border border border-border text-text rounded-lg transition-colors">Edit</button>
-                    <button onClick={() => toggleAgentStatus(agent.id, agent.status)} className="text-xs px-3 py-1.5 bg-surface3 hover:bg-border border border-border text-text2 rounded-lg transition-colors">
+                    <button onClick={() => toggleAgentStatus(agent.id, agent.status ?? 'draft')} className="text-xs px-3 py-1.5 bg-surface3 hover:bg-border border border-border text-text2 rounded-lg transition-colors">
                       {agent.status === 'published' ? 'Pause' : 'Publish'}
                     </button>
                     <button onClick={() => deleteAgent(agent.id)} className="text-xs px-3 py-1.5 bg-red/10 hover:bg-red/20 border border-red/30 text-red rounded-lg transition-colors">Delete</button>
@@ -266,7 +266,7 @@ function RequirementCard({ requirement }: { requirement: Requirement }) {
     }
     if (convId) {
       openChat({
-        conversationId: convId,
+        id: convId,
         participantId: requirement.buyer_id,
         participantName: `Business in ${(requirement as unknown as Record<string, Record<string, string>>).buyer_profiles?.industry || requirement.category}`,
         participantAvatar: null,
@@ -283,7 +283,7 @@ function RequirementCard({ requirement }: { requirement: Requirement }) {
     <div className="bg-surface2 border border-border hover:border-border2 rounded-xl p-5 transition-all group">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs bg-blue/15 text-blue px-2 py-0.5 rounded-full font-medium">{bp?.industry || requirement.category}</span>
-        <span className="text-text3 text-xs">{new Date(requirement.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+        <span className="text-text3 text-xs">{new Date(requirement.created_at ?? '').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
       </div>
       <h3 className="font-semibold text-text mb-2 line-clamp-2">{requirement.title}</h3>
       <p className="text-text3 text-sm line-clamp-2 mb-4">{requirement.description}</p>

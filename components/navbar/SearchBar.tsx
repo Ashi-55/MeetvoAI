@@ -75,9 +75,9 @@ export function SearchBar() {
                 <button key={b.id} onClick={() => { router.push(`/builder/${b.id}`); setOpen(false); setQuery(''); }}
                   className="w-full text-left px-4 py-3 hover:bg-surface2 transition-colors flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text text-xs font-bold shrink-0">
-                    {b.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                    {(b.full_name ?? 'BU').split(' ').map((n) => n[0]).join('').slice(0, 2)}
                   </div>
-                  <p className="text-text text-sm font-medium">{b.full_name}</p>
+                  <p className="text-text text-sm font-medium">{b.full_name || 'Builder'}</p>
                 </button>
               ))}
             </div>

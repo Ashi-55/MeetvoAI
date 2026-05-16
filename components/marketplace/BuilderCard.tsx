@@ -32,11 +32,11 @@ export function BuilderCard({ profile, builderProfile }: Props) {
     if (convId) {
       openChat({
         conversationId: convId,
-        participantId: profile.id,
-        participantName: profile.full_name,
-        participantAvatar: profile.avatar_url,
+        participantId: profile.id ?? '',
+        participantName: profile.full_name ?? 'Builder',
+        participantAvatar: profile.avatar_url ?? null,
         isVerified: builderProfile.verification_status === 'verified',
-        responseTimeHours: builderProfile.response_time_hours,
+        responseTimeHours: builderProfile.response_time_hours ?? 24,
         isMinimised: false,
       });
     }
@@ -48,7 +48,7 @@ export function BuilderCard({ profile, builderProfile }: Props) {
       <div className="flex items-start gap-4 mb-4">
         <div className="relative shrink-0">
           <div className="w-14 h-14 rounded-full bg-brand/20 flex items-center justify-center text-brand text-xl font-bold">
-            {profile.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+            {(profile.full_name ?? 'BU').split(' ').map((n) => n[0]).join('').slice(0, 2)}
           </div>
           {builderProfile.verification_status === 'verified' && (
             <div className="absolute -bottom-1 -right-1 bg-surface rounded-full">
@@ -57,13 +57,13 @@ export function BuilderCard({ profile, builderProfile }: Props) {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-text truncate">{profile.full_name}</h3>
+          <h3 className="font-semibold text-text truncate">{profile.full_name || 'Builder'}</h3>
           <p className="text-text3 text-xs line-clamp-2 mt-0.5">{builderProfile.title}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-3">
-        {builderProfile.specialties.slice(0, 3).map((s) => (
+        {(builderProfile.specialties ?? []).slice(0, 3).map((s) => (
           <span key={s} className="bg-surface2 text-text3 px-2 py-0.5 rounded text-xs">{s}</span>
         ))}
       </div>

@@ -12,8 +12,14 @@ export interface User {
 // Generic profile used across the app
 export interface Profile {
   user_id: string;
-  full_name: string;
-  avatar_url: string | null;
+  id?: string;
+  full_name?: string;
+  email?: string;
+  avatar_url?: string | null;
+  is_admin?: boolean;
+  current_mode?: 'buyer' | 'builder';
+  buyer_onboarding_complete?: boolean;
+  builder_onboarding_complete?: boolean;
   created_at?: string;
 }
 
@@ -37,6 +43,7 @@ export interface BuilderProfile {
   languages?: string[];
 
   hourly_rate?: number;
+  experience_years?: number;
 
   // Subscription fields referenced by settings/studio pages
   subscription_plan?: string;
@@ -51,6 +58,14 @@ export interface BusinessProfile {
   website?: string | null;
   industry?: string | null;
   company_size?: string | null;
+}
+
+export interface BuyerProfile {
+  user_id: string;
+  business_name?: string;
+  industry?: string | null;
+  website?: string | null;
+  created_at?: string;
 }
 
 export interface Agent {
@@ -117,9 +132,13 @@ export interface Message {
   offer_data?: {
     title?: string;
     description?: string;
+    price?: number;
     monthly_price?: number;
     platformFee?: number;
     totalPrice?: number;
+    delivery_days?: number;
+    status?: 'pending' | 'accepted' | 'declined';
+    order_id?: string;
   } | null;
 
   content?: string;
@@ -142,6 +161,11 @@ export interface Order {
   id: string;
   buyer_id: string;
   builder_id: string;
+  agent_id?: string;
+  title?: string;
+  description?: string | null;
+  total_amount?: number;
+  dispute_reason?: string | null;
   order_status?: string;
   escrow_status?: string;
   razorpay_order_id?: string | null;
@@ -246,6 +270,22 @@ export interface Filter {
   maxPrice?: number;
 }
 
+export interface Requirement {
+  id: string;
+  buyer_id: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  created_at?: string;
+  budget_min?: number;
+  budget_max?: number;
+  timeline?: string;
+  buyer_profiles?: {
+    industry?: string;
+    business_name?: string;
+  };
+}
+
 export interface Plan {
   id: string;
   name: string;
@@ -263,10 +303,13 @@ export interface PlatformFeeBreakdown {
 }
 
 export interface ChatSession {
-  id: string;
+  id?: string;
+  conversationId?: string;
   participantId: string;
   participantName: string;
   participantAvatar: string | null;
+  agentId?: string;
+  agentName?: string;
   lastMessageAt?: string;
   isVerified?: boolean;
   responseTimeHours?: number;
