@@ -9,7 +9,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { AvatarDropdown } from './AvatarDropdown';
-import { SearchBar } from './SearchBar';
 import { createClient } from '@/lib/supabase/client';
 
 export function Navbar() {
@@ -31,9 +30,7 @@ export function Navbar() {
         <MeetvoLogo size="sm" />
       </Link>
 
-      <div className="flex-1 max-w-xl hidden md:block">
-        <SearchBar />
-      </div>
+      <div className="flex-1 max-w-xl hidden md:block" />
 
       {user ? (
         <div className="flex items-center gap-1 ml-auto">
@@ -68,7 +65,6 @@ export function Navbar() {
 
       {mobileOpen && (
         <div className="absolute top-14 left-0 right-0 bg-surface border-b border-border p-4 md:hidden">
-          <SearchBar />
           {user && (
             <div className="mt-3 space-y-1">
               <Link href="/messages" className="flex items-center gap-2 p-2 rounded-lg hover:bg-surface2 text-text2" onClick={() => setMobileOpen(false)}>
