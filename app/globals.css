@@ -1,4 +1,5 @@
-/* Roman-style capitals font (Cinzel) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Roman-style capitals font for brand */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
@@ -28,9 +29,14 @@ html {
 body {
   background-color: var(--page-bg);
   color: #FFFFFF;
-  font-family: 'Cinzel', serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Brand font applied only to the Meetvo logo text */
+.brand-roman {
+  font-family: 'Cinzel', serif;
 }
 
 /* Scrollbar */
