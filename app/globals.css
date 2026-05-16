@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Roman-style capitals font (Cinzel) */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -27,7 +28,7 @@ html {
 body {
   background-color: var(--page-bg);
   color: #FFFFFF;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cinzel', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
