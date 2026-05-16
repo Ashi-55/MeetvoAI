@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 
 import { createClient } from '@/lib/supabase/server';
-import { razorpay } from '@/lib/razorpay';
+import { getRazorpay } from '@/lib/razorpay';
 
 export async function POST(request: Request) {
   const supabase = createClient();
@@ -31,12 +31,18 @@ export async function POST(request: Request) {
 
     // Create Razorpay order (amount in paise)
     const receipt = `deal_${offer_id}_${Date.now()}`;
-    const order = await razorpay.orders.create({
-      amount: total * 100,
-      currency: 'INR',
-      receipt,
-      payment_capture: 1,
-    });
+    let order: any;
+    try {
+      const razorpay = getRazorpay();
+      order = await razorpay.orders.create({
+        amount: total * 100,
+        currency: 'INR',
+        receipt,
+        payment_capture: 1,
+      });
+    } catch (err: any) {
+      return NextResponse.json({ error: err?.message || 'Razorpay error' }, { status: 500 });
+    }
 
     const dealValue = total;
 
