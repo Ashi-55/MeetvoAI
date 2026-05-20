@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { BadgeCheck, Send, TriangleAlert as AlertTriangle } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { BadgeCheck, Send, TriangleAlert as AlertTriangle, MessageSquare } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { detectExternalPayment, formatTime, formatDate, timeAgo } from '@/lib/utils';
+import { detectExternalPayment, formatDate, formatTime, timeAgo } from '@/lib/utils';
 import { OfferCard } from '@/components/chat/OfferCard';
 import type { Conversation, Message } from '@/types';
 
 export default function MessagesPage() {
   const { user, profile } = useAuth();
+  const searchParams = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selected, setSelected] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -22,37 +25,93 @@ export default function MessagesPage() {
   const [offerDays, setOfferDays] = useState('');
   const [search, setSearch] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     if (!user) return;
     loadConversations();
-    const channel = supabase.channel('convs').on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => loadConversations()).subscribe();
+    const channel = supabase
+      .channel('conversations-list')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => loadConversations())
+      .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   useEffect(() => {
+    if (!user || conversations.length === 0) return;
+    const conversationId = searchParams.get('conversation');
+    if (!conversationId) return;
+    const match = conversations.find((conv) => conv.id === conversationId);
+    if (match) setSelected(match);
+  }, [conversations, searchParams, user]);
+
+  useEffect(() => {
     if (!selected) return;
     loadMessages(selected.id);
-    const channel = supabase.channel(`msgs:${selected.id}`)
+
+    const channel = supabase
+      .channel(`messages-${selected.id}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${selected.id}` },
         (payload: { new: Record<string, unknown> }) => {
-          setMessages((prev) => [...prev, payload.new as unknown as Message]);
-          if (detectExternalPayment((payload.new as unknown as Message).content || '')) setPaymentWarning(true);
+          const incoming = payload.new as unknown as Message;
+          setMessages((prev) => prev.some((msg) => msg.id === incoming.id) ? prev : [...prev, incoming]);
+          if (detectExternalPayment(incoming.content || '')) {
+            setPaymentWarning(true);
+          }
         }
-      ).subscribe();
+      )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `conversation_id=eq.${selected.id}` },
+        (payload: { new: Record<string, unknown> }) => {
+          const updated = payload.new as unknown as Message;
+          setMessages((prev) => prev.map((msg) => msg.id === updated.id ? updated : msg));
+        }
+      )
+      .subscribe();
+
     return () => { supabase.removeChannel(channel); };
-  }, [selected]);
+  }, [selected, supabase]);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
   async function loadConversations() {
-    const { data } = await supabase.from('conversations').select('*, buyer:profiles!conversations_buyer_id_fkey(full_name, avatar_url), builder:profiles!conversations_builder_id_fkey(full_name, avatar_url), builder_profile:builder_profiles(verification_status, response_time_hours), agent:agents(name)').or(`buyer_id.eq.${user!.id},builder_id.eq.${user!.id}`).order('last_message_at', { ascending: false });
-    setConversations((data || []) as unknown as Conversation[]);
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*, buyer:profiles!conversations_buyer_id_fkey(full_name, avatar_url), builder:profiles!conversations_builder_id_fkey(full_name, avatar_url), builder_profile:builder_profiles(*), agent:agents(name)')
+      .or(`buyer_id.eq.${user!.id},builder_id.eq.${user!.id}`)
+      .order('last_message_at', { ascending: false });
+
+    if (!error) {
+      setConversations((data || []) as unknown as Conversation[]);
+      return;
+    }
+
+    const { data: legacyData, error: legacyError } = await supabase
+      .from('conversations')
+      .select('*, business:profiles!conversations_business_id_fkey(full_name, avatar_url), builder:profiles!conversations_builder_id_fkey(full_name, avatar_url), builder_profile:builder_profiles(*), agent:agents(name)')
+      .or(`business_id.eq.${user!.id},builder_id.eq.${user!.id}`)
+      .order('last_message_at', { ascending: false });
+
+    if (legacyError) {
+      console.error('Failed to load conversations:', error.message, legacyError.message);
+      setConversations([]);
+      return;
+    }
+
+    setConversations((legacyData || []).map((conv: any) => ({
+      ...conv,
+      buyer_id: conv.buyer_id || conv.business_id,
+      buyer: conv.buyer || conv.business,
+    })) as unknown as Conversation[]);
   }
 
   async function loadMessages(convId: string) {
-    const { data } = await supabase.from('messages').select('*, sender:profiles(full_name, avatar_url)').eq('conversation_id', convId).order('created_at', { ascending: true }).limit(100);
+    const { data } = await supabase
+      .from('messages')
+      .select('*, sender:profiles(full_name, avatar_url)')
+      .eq('conversation_id', convId)
+      .order('created_at', { ascending: true })
+      .limit(200);
+
     setMessages((data || []) as unknown as Message[]);
     await supabase.from('messages').update({ is_read: true }).eq('conversation_id', convId).neq('sender_id', user!.id);
   }
@@ -61,167 +120,249 @@ export default function MessagesPage() {
     if (!content.trim() || !selected || !user) return;
     setSending(true);
     if (detectExternalPayment(content)) setPaymentWarning(true);
-    await supabase.from('messages').insert({ conversation_id: selected.id, sender_id: user.id, content: content.trim(), message_type: 'text', contains_external_payment: detectExternalPayment(content) });
-    await supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', selected.id);
+
+    const { data, error } = await supabase.from('messages').insert({
+      conversation_id: selected.id,
+      sender_id: user.id,
+      content: content.trim(),
+      message_type: 'text',
+      contains_external_payment: detectExternalPayment(content),
+    }).select('*').single();
+
+    if (error) {
+      console.error('Failed to send message:', error.message);
+      setSending(false);
+      return;
+    }
+
+    if (data) {
+      setMessages((prev) => prev.some((msg) => msg.id === data.id) ? prev : [...prev, data as Message]);
+    }
+
+    const { error: convError } = await supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', selected.id);
+    if (convError) {
+      console.error('Failed to update conversation timestamp:', convError.message);
+    }
+
     setInput('');
     setSending(false);
   }
 
   async function sendOffer() {
-    if (!user || !selected || !offerDesc || !offerPrice || !offerDays) return;
+    if (!user || !selected || !offerDesc.trim() || !offerPrice.trim() || !offerDays.trim()) return;
     setSending(true);
-    const { calculatePlatformFee } = await import('@/lib/fees');
-    const price = parseInt(offerPrice);
-    const { platformFee, gst } = calculatePlatformFee(price);
-    await supabase.from('messages').insert({ conversation_id: selected.id, sender_id: user.id, content: null, message_type: 'offer_card', offer_data: { description: offerDesc, price, delivery_days: parseInt(offerDays), status: 'pending', platformFee, gst } });
+    const price = parseInt(offerPrice, 10);
+    const { data, error } = await supabase.from('messages').insert({
+      conversation_id: selected.id,
+      sender_id: user.id,
+      content: null,
+      message_type: 'offer_card',
+      offer_data: {
+        description: offerDesc,
+        price,
+        delivery_days: parseInt(offerDays, 10),
+        status: 'pending',
+      },
+    }).select('*').single();
+
+    if (error) {
+      console.error('Failed to send offer message:', error.message);
+      setSending(false);
+      return;
+    }
+
+    if (data) {
+      setMessages((prev) => prev.some((msg) => msg.id === data.id) ? prev : [...prev, data as Message]);
+    }
+
     setShowOfferForm(false);
-    setOfferDesc(''); setOfferPrice(''); setOfferDays('');
+    setOfferDesc('');
+    setOfferPrice('');
+    setOfferDays('');
     setSending(false);
   }
 
-  const filteredConvs = conversations.filter((c) => {
-    const other = c.buyer_id === user?.id ? (c as unknown as Record<string, Record<string, string>>).builder : (c as unknown as Record<string, Record<string, string>>).buyer;
+  const filteredConversations = conversations.filter((conv) => {
+    const other = conv.buyer_id === user?.id ? (conv as any).builder : (conv as any).buyer;
     return !search || other?.full_name?.toLowerCase().includes(search.toLowerCase());
   });
 
   let prevDate = '';
 
-  return (
-    <div className="flex h-[calc(100vh-56px)]">
-      <div className="w-80 shrink-0 bg-surface border-r border-border flex flex-col">
-        <div className="p-4 border-b border-border">
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations..."
-            className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-2.5 text-text text-sm placeholder-text3 outline-none transition-colors" />
-        </div>
-        <div className="flex-1 overflow-y-auto">
-          {filteredConvs.map((conv) => {
-            const isBuyer = conv.buyer_id === user?.id;
-            const other = isBuyer ? (conv as unknown as Record<string, Record<string, string>>).builder : (conv as unknown as Record<string, Record<string, string>>).buyer;
-            const unread = isBuyer ? (conv.buyer_unread ?? 0) : (conv.builder_unread ?? 0);
-            return (
-              <button key={conv.id} onClick={() => { setSelected(conv); setPaymentWarning(false); }}
-                className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-surface2 transition-colors border-b border-border ${selected?.id === conv.id ? 'bg-surface2' : ''}`}>
-                <div className="w-10 h-10 rounded-full bg-brand/20 flex items-center justify-center text-brand text-sm font-bold shrink-0">
-                  {other?.full_name?.[0] || '?'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center">
-                    <span className="text-text text-sm font-semibold truncate">{other?.full_name}</span>
-                    <span className="text-text3 text-xs">{timeAgo(conv.last_message_at ?? '')}</span>
-                  </div>
-                  {(conv as unknown as Record<string, Record<string, string>>).agent?.name && (
-                    <p className="text-text3 text-xs truncate">{(conv as unknown as Record<string, Record<string, string>>).agent?.name}</p>
-                  )}
-                </div>
-                {unread > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-red text-white text-xs flex items-center justify-center font-bold shrink-0">{unread}</span>
-                )}
-              </button>
-            );
-          })}
-          {filteredConvs.length === 0 && <p className="text-center text-text3 text-sm py-8">No conversations yet</p>}
+  if (!user) {
+    return (
+      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-page px-4">
+        <div className="w-full max-w-md rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-10 text-center">
+          <p className="text-5xl"><MessageSquare size={48} color="#1E1B3A" /></p>
+          <h2 className="mt-6 text-2xl font-semibold text-white">No conversations yet</h2>
+          <p className="mt-3 text-sm text-[#9490B5]">Browse the marketplace to message a builder and start your AI journey.</p>
+          <Link href="/marketplace" className="mt-8 inline-flex rounded-full bg-[#ae9bc9] px-6 py-3 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA]">Browse Marketplace ?</Link>
         </div>
       </div>
+    );
+  }
 
-      <div className="flex-1 flex flex-col">
-        {selected ? (() => {
-          const isBuyer = selected.buyer_id === user?.id;
-          const other = isBuyer ? (selected as unknown as Record<string, Record<string, string>>).builder : (selected as unknown as Record<string, Record<string, string>>).buyer;
-          const builderProfile = (selected as unknown as Record<string, Record<string, unknown>>).builder_profile;
-          return (
-            <>
-              <div className="h-14 flex items-center gap-3 px-6 bg-surface border-b border-border">
-                <div className="w-9 h-9 rounded-full bg-brand/20 flex items-center justify-center text-brand text-sm font-bold">{other?.full_name?.[0]}</div>
-                <div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-text font-semibold text-sm">{other?.full_name}</span>
-                    {(builderProfile as Record<string, string>)?.verification_status === 'verified' && <BadgeCheck size={13} className="text-blue" />}
+  return (
+    <div className="flex min-h-[calc(100vh-64px)] bg-page text-white">
+      <aside className="w-full max-w-[280px] shrink-0 border-r border-[#1E1B3A] bg-[#100F1C]">
+        <div className="border-b border-[#1E1B3A] px-4 py-4">
+          <h2 className="text-lg font-semibold text-white">Messages</h2>
+          <p className="mt-1 text-sm text-[#9490B5]">Recent conversations</p>
+        </div>
+        <div className="border-b border-[#1E1B3A] px-4 py-3">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search conversations"
+            className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-2 text-sm text-white outline-none focus:border-[#ae9bc9]"
+          />
+        </div>
+        <div className="max-h-[calc(100vh-64px-116px)] overflow-y-auto px-2 py-2">
+          {filteredConversations.length > 0 ? filteredConversations.map((conv) => {
+            const isBuyer = conv.buyer_id === user.id;
+            const other = isBuyer ? (conv as any).builder : (conv as any).buyer;
+            const unread = isBuyer ? (conv as any).buyer_unread ?? 0 : (conv as any).builder_unread ?? 0;
+            return (
+              <button
+                key={conv.id}
+                onClick={() => { setSelected(conv); setPaymentWarning(false); }}
+                className={`w-full rounded-3xl px-3 py-3 text-left transition ${selected?.id === conv.id ? 'bg-[#0A172C] border-l-4 border-[#ae9bc9]' : 'hover:bg-[#1E1B3A]'}`}>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0A172C] text-base font-bold text-[#ae9bc9]">
+                    {other?.full_name?.[0] || '?'}
                   </div>
-                  {(builderProfile as Record<string, number>)?.response_time_hours && (
-                    <p className="text-text3 text-xs">Replies in {(builderProfile as Record<string, number>).response_time_hours}h</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate text-sm font-semibold text-white">{other?.full_name || 'Unknown'}</p>
+                      <span className="text-xs text-[#9490B5]">{timeAgo(conv.last_message_at ?? '')}</span>
+                    </div>
+                    <p className="mt-1 truncate text-xs text-[#9490B5]">{(conv as any).agent?.name || (conv as any).last_message || 'No messages yet'}</p>
+                  </div>
+                  {unread > 0 && (
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red text-[10px] font-semibold text-white">{unread > 9 ? '9+' : unread}</span>
                   )}
                 </div>
-              </div>
+              </button>
+            );
+          }) : (
+            <div className="py-8 text-center text-sm text-[#9490B5]">No conversations yet</div>
+          )}
+        </div>
+      </aside>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-1">
-                {(() => {
-                  const items: React.ReactNode[] = [];
-                  for (const msg of messages) {
-                    const d = formatDate(msg.created_at ?? '');
-                    if (d !== prevDate) {
-                      items.push(<p key={`d-${msg.id}`} className="text-center text-text3 text-xs py-3">{d}</p>);
-                      prevDate = d;
-                    }
-                    const isMine = msg.sender_id === user?.id;
-                    if (msg.message_type === 'offer_card' && msg.offer_data) {
-                      items.push(<OfferCard key={msg.id} message={msg} isMine={isMine} conversationId={selected.id} />);
-                    } else {
-                      items.push(
-                        <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-lg rounded-2xl px-4 py-2.5 ${isMine ? 'bg-brand text-white rounded-br-sm' : 'bg-surface3 text-text rounded-bl-sm'}`}>
-                            <p className="text-sm leading-relaxed break-words">{msg.content}</p>
-                            <p className={`text-xs mt-0.5 ${isMine ? 'text-white/60' : 'text-text3'}`}>{formatTime(msg.created_at ?? '')}</p>
-                          </div>
-                        </div>
-                      );
-                    }
-                  }
-                  return items;
-                })()}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {paymentWarning && (
-                <div className="mx-6 mb-2 bg-red/10 border border-red/30 rounded-lg px-4 py-2.5 flex items-start gap-2">
-                  <AlertTriangle size={14} className="text-red shrink-0 mt-0.5" />
-                  <p className="text-red text-sm">Pay inside MeetvoAI only. External payments remove all escrow protection.</p>
+      <div className="flex flex-1 flex-col bg-page">
+        {selected ? (
+          <>
+            <div className="flex h-20 items-center justify-between border-b border-[#1E1B3A] bg-[#100F1C] px-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0A172C] text-xl font-bold text-[#ae9bc9]">{((selected.buyer_id === user.id ? (selected as any).builder : (selected as any).buyer)?.full_name || 'B')[0]}</div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{(selected.buyer_id === user.id ? (selected as any).builder : (selected as any).buyer)?.full_name || 'Builder'}</p>
+                  <p className="text-xs text-[#9490B5]">{((selected as any).builder_profile as any)?.city || 'Online'}</p>
                 </div>
-              )}
+              </div>
+              <button className="rounded-2xl border border-[#1E1B3A] bg-transparent px-4 py-2 text-sm text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white">
+                View Profile
+              </button>
+            </div>
 
-              {showOfferForm && (
-                <div className="mx-6 mb-2 bg-surface2 border border-border rounded-xl p-4 space-y-3">
-                  <p className="text-text font-semibold">Send an Offer</p>
-                  <input value={offerDesc} onChange={(e) => setOfferDesc(e.target.value)} placeholder="Service description"
-                    className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text text-sm placeholder-text3 outline-none focus:border-brand" />
-                  <div className="flex gap-3">
-                    <input value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} type="number" placeholder="Price (₹)"
-                      className="flex-1 bg-surface border border-border rounded-lg px-3 py-2 text-text text-sm placeholder-text3 outline-none focus:border-brand" />
-                    <input value={offerDays} onChange={(e) => setOfferDays(e.target.value)} type="number" placeholder="Days"
-                      className="flex-1 bg-surface border border-border rounded-lg px-3 py-2 text-text text-sm placeholder-text3 outline-none focus:border-brand" />
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setShowOfferForm(false)} className="flex-1 bg-surface border border-border text-text2 rounded-lg py-2 text-sm transition-colors hover:bg-surface3">Cancel</button>
-                    <button onClick={sendOffer} disabled={sending} className="flex-1 bg-brand hover:bg-brand2 text-white rounded-lg py-2 text-sm font-semibold transition-colors disabled:opacity-50">Send Offer</button>
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              {messages.length === 0 && (
+                <div className="flex h-full items-center justify-center text-center text-[#9490B5]">
+                  <div>
+                    <p className="text-xl"><MessageSquare size={48} color="#1E1B3A" /></p>
+                    <p className="mt-3 text-lg font-medium text-white">Say hello to {(selected.buyer_id === user.id ? (selected as any).builder : (selected as any).buyer)?.full_name}</p>
                   </div>
                 </div>
               )}
+              {messages.map((msg) => {
+                const isMine = msg.sender_id === user.id;
+                const createdAt = msg.created_at ?? '';
+                if (msg.message_type === 'offer_card' && msg.offer_data) {
+                  return <OfferCard key={msg.id} message={msg} isMine={isMine} conversationId={selected.id} />;
+                }
+                return (
+                  <div key={msg.id} className={`mb-4 flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[65%] rounded-3xl px-4 py-3 ${isMine ? 'bg-[#ae9bc9] text-[#08080F] rounded-br-[6px]' : 'bg-[#100F1C] text-white border border-[#1E1B3A] rounded-bl-[6px]'}`}>
+                      <p className="text-sm leading-6 whitespace-pre-wrap break-words">{msg.content}</p>
+                      <p className={`mt-2 text-[11px] ${isMine ? 'text-[#08080F]' : 'text-[#9490B5]'}`}>{formatTime(createdAt)}</p>
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </div>
 
-              <div className="flex items-center gap-3 px-6 py-4 border-t border-border">
+            {paymentWarning && (
+              <div className="mx-6 mb-2 rounded-3xl border border-red bg-red/10 px-4 py-3 text-sm text-red">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle size={18} />
+                  <span>Pay inside the platform only. External payments remove escrow protection.</span>
+                </div>
+              </div>
+            )}
+
+            {showOfferForm && (
+              <div className="mx-6 mb-2 rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-4">
+                <p className="text-sm font-semibold text-white">Send an Offer</p>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <input
+                    value={offerDesc}
+                    onChange={(e) => setOfferDesc(e.target.value)}
+                    placeholder="Service description"
+                    className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                  />
+                  <input
+                    value={offerPrice}
+                    onChange={(e) => setOfferPrice(e.target.value)}
+                    type="number"
+                    placeholder="Price (?)"
+                    className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                  />
+                  <input
+                    value={offerDays}
+                    onChange={(e) => setOfferDays(e.target.value)}
+                    type="number"
+                    placeholder="Delivery days"
+                    className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                  />
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setShowOfferForm(false)} className="flex-1 rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white">Cancel</button>
+                    <button onClick={sendOffer} disabled={sending} className="flex-1 rounded-2xl bg-[#ae9bc9] px-4 py-3 text-sm font-semibold text-[#08080F] transition disabled:opacity-50 hover:bg-[#6F4EEA]">Send Offer</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="sticky bottom-0 z-10 border-t border-[#1E1B3A] bg-[#100F1C] px-6 py-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 {profile?.current_mode === 'builder' && (
-                  <button onClick={() => setShowOfferForm(!showOfferForm)}
-                    className="text-sm px-3 py-2.5 bg-surface2 border border-border text-text2 rounded-lg hover:bg-surface3 transition-colors whitespace-nowrap">
+                  <button onClick={() => setShowOfferForm((prev) => !prev)}
+                    className="rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white">
                     Send Offer
                   </button>
                 )}
-                <input
+                <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
-                  placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
-                  className="flex-1 bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-2.5 text-text text-sm placeholder-text3 outline-none transition-colors"
+                  rows={1}
+                  placeholder="Type a message..."
+                  className="min-h-[56px] flex-1 resize-none rounded-3xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-white outline-none transition focus:border-[#ae9bc9]"
                 />
                 <button onClick={() => sendMessage(input)} disabled={!input.trim() || sending}
-                  className="w-10 h-10 rounded-lg bg-brand hover:bg-brand2 disabled:opacity-40 text-white flex items-center justify-center transition-colors">
-                  <Send size={16} />
+                  className="inline-flex h-14 items-center justify-center rounded-3xl bg-[#ae9bc9] px-5 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA] disabled:opacity-50">
+                  {sending ? '...' : <Send size={16} />}
                 </button>
               </div>
-            </>
-          );
-        })() : (
-          <div className="flex-1 flex items-center justify-center text-text3">
+            </div>
+          </>
+        ) : (
+          <div className="flex h-full items-center justify-center border-l border-[#1E1B3A] bg-page text-[#9490B5]">
             <div className="text-center">
-              <div className="text-4xl mb-4">💬</div>
-              <p>Select a conversation to start messaging</p>
+              <p className="text-4xl"><MessageSquare size={48} color="#1E1B3A" /></p>
+              <p className="mt-4 text-xl font-semibold text-white">Select a conversation to start chatting</p>
+              <p className="mt-2 text-sm">Your chats and offers will appear here.</p>
             </div>
           </div>
         )}
@@ -229,3 +370,5 @@ export default function MessagesPage() {
     </div>
   );
 }
+
+

@@ -10,8 +10,8 @@ function createAdmin() {
 }
 
 
-const DEMO_BUSINESS_EMAIL = 'demo-business@meetvoai.in';
-const DEMO_BUILDER_EMAIL = 'demo-builder@meetvoai.in';
+const DEMO_BUSINESS_EMAIL = 'demo-business@MeetvoAI.in';
+const DEMO_BUILDER_EMAIL = 'demo-builder@MeetvoAI.in';
 const DEMO_PASSWORD = 'Demo@1234';
 
 // NOTE: This seed route is best-effort because the repo may have different table schemas.
@@ -62,7 +62,6 @@ export async function GET() {
     await admin.from('builder_profiles').upsert([
       {
         id: builderId,
-        user_id: builderId,
         full_name: 'Demo Builder',
         verification_status: 'verified',
         response_time_hours: 24,
@@ -180,4 +179,5 @@ export async function GET() {
     return NextResponse.json({ success: false, error: e?.message || 'Seed failed' }, { status: 500 });
   }
 }
+
 

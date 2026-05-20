@@ -81,23 +81,19 @@ export function HandshakeIcon({ size = 24, className }: HandshakeLogoProps) {
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
+  width?: number;
+  height?: number;
   className?: string;
 }
 
-export function MeetvoLogo({ size = 'md', className }: LogoProps) {
-  const iconSize = size === 'sm' ? 18 : size === 'lg' ? 32 : 22;
-  const textSize = size === 'sm' ? 'text-base' : size === 'lg' ? 'text-2xl' : 'text-lg';
+export function MeetvoLogo({ size = 'sm', width, height, className }: LogoProps) {
+  const resolvedSize = width != null
+    ? width >= 120 ? 'lg' : width >= 60 ? 'md' : 'sm'
+    : size;
+  const textSize = resolvedSize === 'sm' ? 'text-base' : resolvedSize === 'lg' ? 'text-2xl' : 'text-lg';
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <div
-        className={cn(
-          'rounded-xl flex items-center justify-center bg-gradient-to-br from-brand to-blue shrink-0',
-          size === 'sm' ? 'w-7 h-7' : size === 'lg' ? 'w-12 h-12' : 'w-9 h-9'
-        )}
-      >
-        <HandshakeIcon size={iconSize} className="text-white" />
-      </div>
       <span className={cn('font-extrabold tracking-tight', textSize)}>
         <span className="text-brand">Meetvo</span>
         <span className="text-text">AI</span>

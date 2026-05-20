@@ -15,7 +15,7 @@ export type WebsiteConfig = {
 };
 
 function generateWebsiteHTML(cfg: WebsiteConfig) {
-  const title = cfg.business_name || 'MeetvoAI';
+  const title = cfg.business_name || 'AI Studio';
   const primary = cfg.primary_color || '#5B21FF';
   const pages = (cfg.pages || ['Home', 'About']).slice(0, 5);
   const features = (cfg.features || ['WhatsApp CTA', 'Lead capture', 'Automation']).slice(0, 3);
@@ -48,7 +48,7 @@ function generateWebsiteHTML(cfg: WebsiteConfig) {
   <style>
     :root{--primary:${primary};}
     *{box-sizing:border-box}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0A0F1E;color:#fff}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#08080F;color:#fff}
     .container{max-width:1100px;margin:0 auto;padding:0 20px}
     .nav{position:sticky;top:0;background:rgba(10,15,30,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
     .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:12px}
@@ -197,4 +197,5 @@ export function WebsitePreview({ config }: { config: {
     </div>
   );
 }
+
 

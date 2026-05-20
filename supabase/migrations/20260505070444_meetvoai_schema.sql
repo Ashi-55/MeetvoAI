@@ -256,8 +256,11 @@ create policy "builder_profiles_update" on builder_profiles for update to authen
 create policy "builder_profiles_delete" on builder_profiles for delete to authenticated using (auth.uid() = id);
 
 -- Agents
-create policy "agents_select_published" on agents for select using (status = 'published' or builder_id = auth.uid());
-create policy "agents_insert" on agents for insert to authenticated with check (builder_id = auth.uid());
+-- Agents
+DROP POLICY IF EXISTS agents_select_published ON public.agents;
+CREATE POLICY "agents_select_published" ON agents FOR SELECT USING (status = 'published' or builder_id = auth.uid());
+DROP POLICY IF EXISTS agents_insert ON public.agents;
+CREATE POLICY "agents_insert" ON agents FOR INSERT TO authenticated WITH CHECK (builder_id = auth.uid());
 create policy "agents_update" on agents for update to authenticated using (builder_id = auth.uid());
 create policy "agents_delete" on agents for delete to authenticated using (builder_id = auth.uid());
 

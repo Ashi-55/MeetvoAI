@@ -40,7 +40,7 @@ export function DeploySection({
   const [spinner, setSpinner] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
 
-  const full = useMemo(() => `${cleanSubdomain(subdomain)}.meetvoai.in`, [subdomain]);
+  const full = useMemo(() => `${cleanSubdomain(subdomain)}.ai`, [subdomain]);
 
   useEffect(() => {
     setAvailable(null);
@@ -85,7 +85,7 @@ export function DeploySection({
               className="bg-transparent border-border"
               placeholder="your-subdomain"
             />
-            <div className="text-text3 text-sm font-semibold">.meetvoai.in</div>
+            <div className="text-text3 text-sm font-semibold">.ai</div>
           </div>
 
           <div className="mt-2">
@@ -174,4 +174,5 @@ export function DeploySection({
     </div>
   );
 }
+
 

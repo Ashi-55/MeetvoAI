@@ -38,7 +38,7 @@ export function Modal({ open, onClose, children }: ModalProps) {
 
       <div
         ref={panelRef}
-        className="relative w-[92%] max-w-lg rounded-xl bg-white p-6 shadow-2xl animate-[scaleIn_160ms_ease-out_forwards]"
+        className="relative w-[92%] max-w-lg rounded-xl bg-[#100F1C] border border-[#1E1B3A] p-6 shadow-2xl animate-[scaleIn_160ms_ease-out_forwards]"
         style={{
           transformOrigin: '50% 50%',
         }}

@@ -75,7 +75,7 @@ export function AgentCard({ agent }: Props) {
             </div>
           )}
           {agent.is_featured && (
-            <span className="absolute top-2 left-2 bg-amber text-black text-xs font-bold px-2 py-0.5 rounded-full">Featured</span>
+            <span className="absolute top-2 left-2 bg-amber text-white text-xs font-bold px-2 py-0.5 rounded-full">Featured</span>
           )}
         </div>
 

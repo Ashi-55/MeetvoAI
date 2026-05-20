@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +12,22 @@ import { useAuthStore } from '@/stores/authStore';
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Name required'),
+  title: z.string().optional(),
+  bio: z.string().optional(),
+  linkedin_url: z.string().optional(),
+  experience_years: z.coerce.number().min(0).optional(),
+  whatsapp_number: z.string().optional(),
+  specialties: z.string().optional(),
+  skills: z.string().optional(),
+  languages: z.string().optional(),
+  business_name: z.string().optional(),
+  industry: z.string().optional(),
+  company_size: z.string().optional(),
+  location: z.string().optional(),
+  website: z.string().optional(),
+  needs: z.string().optional(),
+  budget_range: z.string().optional(),
+  description: z.string().optional(),
 });
 const passwordSchema = z.object({
   new_password: z.string().min(8, 'At least 8 characters'),
@@ -23,22 +39,90 @@ type PasswordData = z.infer<typeof passwordSchema>;
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user, profile, builderProfile } = useAuth();
+  const { user, profile, buyerProfile, builderProfile } = useAuth();
   const setProfile = useAuthStore((s) => s.setProfile);
+  const setBuyerProfile = useAuthStore((s) => s.setBuyerProfile);
+  const setBuilderProfile = useAuthStore((s) => s.setBuilderProfile);
   const [tab, setTab] = useState<'profile' | 'security' | 'payments'>('profile');
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const pForm = useForm<ProfileData>({ resolver: zodResolver(profileSchema), defaultValues: { full_name: profile?.full_name || '' } });
+  const pForm = useForm<ProfileData>({ resolver: zodResolver(profileSchema), defaultValues: { full_name: '' } });
   const pwForm = useForm<PasswordData>({ resolver: zodResolver(passwordSchema) });
+  const isBuilder = profile?.current_mode === 'builder';
+
+  useEffect(() => {
+    if (!profile) return;
+    pForm.reset({
+      full_name: profile.full_name || '',
+      title: builderProfile?.title || '',
+      bio: builderProfile?.bio || '',
+      linkedin_url: builderProfile?.linkedin_url || '',
+      experience_years: builderProfile?.experience_years || 0,
+      whatsapp_number: (isBuilder ? (builderProfile as any)?.whatsapp_number : (buyerProfile as any)?.whatsapp_number) || '',
+      specialties: builderProfile?.specialties?.join(', ') || '',
+      skills: builderProfile?.skills?.join(', ') || '',
+      languages: builderProfile?.languages?.join(', ') || '',
+      business_name: buyerProfile?.business_name || '',
+      industry: buyerProfile?.industry || '',
+      company_size: (buyerProfile as any)?.company_size || '',
+      location: buyerProfile?.location || '',
+      website: buyerProfile?.website || '',
+      needs: buyerProfile?.needs?.join(', ') || '',
+      budget_range: buyerProfile?.budget_range || '',
+      description: buyerProfile?.description || '',
+    });
+  }, [profile, buyerProfile, builderProfile, isBuilder, pForm]);
+
+  function list(value?: string) {
+    return (value || '').split(',').map((item) => item.trim()).filter(Boolean);
+  }
 
   async function saveProfile(data: ProfileData) {
     if (!user || !profile) return;
     setSaving(true);
     const supabase = createClient();
-    await supabase.from('profiles').update({ full_name: data.full_name, updated_at: new Date().toISOString() }).eq('id', user.id);
-    setProfile({ ...profile, full_name: data.full_name });
-    setMsg('Profile updated');
+    const { error: profileError } = await supabase.from('profiles').update({ full_name: data.full_name, updated_at: new Date().toISOString() }).eq('id', user.id);
+
+    let detailError = null;
+    if (isBuilder) {
+      const languages = list(data.languages);
+      const result = await supabase.from('builder_profiles').upsert({
+        id: user.id,
+        title: data.title || null,
+        bio: data.bio || null,
+        linkedin_url: data.linkedin_url || null,
+        experience_years: Number(data.experience_years || 0),
+        whatsapp_number: data.whatsapp_number || null,
+        specialties: list(data.specialties),
+        skills: list(data.skills),
+        languages: languages.length ? languages : ['English'],
+      }).select('*').maybeSingle();
+      detailError = result.error;
+      if (result.data) setBuilderProfile(result.data);
+    } else {
+      const result = await supabase.from('buyer_profiles').upsert({
+        id: user.id,
+        business_name: data.business_name || null,
+        industry: data.industry || null,
+        company_size: data.company_size || null,
+        location: data.location || null,
+        website: data.website || null,
+        whatsapp_number: data.whatsapp_number || null,
+        needs: list(data.needs),
+        budget_range: data.budget_range || null,
+        description: data.description || null,
+      }).select('*').maybeSingle();
+      detailError = result.error;
+      if (result.data) setBuyerProfile(result.data);
+    }
+
+    if (profileError || detailError) {
+      setMsg(`Error: ${profileError?.message || detailError?.message || 'Unable to update profile'}`);
+    } else {
+      setProfile({ ...profile, full_name: data.full_name });
+      setMsg('Profile updated');
+    }
     setSaving(false);
     setTimeout(() => setMsg(''), 3000);
   }
@@ -95,6 +179,91 @@ export default function SettingsPage() {
               <label className="block text-sm text-text2 mb-1.5">Email</label>
               <input value={profile?.email || ''} disabled className="w-full bg-surface3 border border-border rounded-lg px-4 py-3 text-text3 cursor-not-allowed" />
             </div>
+
+            {isBuilder ? (
+              <div className="grid gap-4">
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">Professional Title</label>
+                  <input {...pForm.register('title')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">Bio</label>
+                  <textarea {...pForm.register('bio')} rows={4} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors resize-none" />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">LinkedIn URL</label>
+                    <input {...pForm.register('linkedin_url')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">Experience Years</label>
+                    <input {...pForm.register('experience_years')} type="number" min="0" className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">WhatsApp Number</label>
+                  <input {...pForm.register('whatsapp_number')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">Specialties</label>
+                  <input {...pForm.register('specialties')} placeholder="WhatsApp Automation, Lead Generation Bots" className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">Skills</label>
+                    <input {...pForm.register('skills')} placeholder="Python, n8n, LangChain" className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">Languages</label>
+                    <input {...pForm.register('languages')} placeholder="English, Hindi" className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">Business Name</label>
+                  <input {...pForm.register('business_name')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">Industry</label>
+                    <input {...pForm.register('industry')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">Company Size</label>
+                    <input {...pForm.register('company_size')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">Location</label>
+                    <input {...pForm.register('location')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-text2 mb-1.5">Website</label>
+                    <input {...pForm.register('website')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">WhatsApp Number</label>
+                  <input {...pForm.register('whatsapp_number')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">AI Needs</label>
+                  <input {...pForm.register('needs')} placeholder="Lead qualification, WhatsApp automation" className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">Budget Range</label>
+                  <input {...pForm.register('budget_range')} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm text-text2 mb-1.5">Main Challenge</label>
+                  <textarea {...pForm.register('description')} rows={3} className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text outline-none transition-colors resize-none" />
+                </div>
+              </div>
+            )}
+
             <button type="submit" disabled={saving}
               className="bg-brand hover:bg-brand2 disabled:opacity-50 text-white rounded-lg px-6 py-2.5 font-semibold transition-colors">
               {saving ? 'Saving...' : 'Save Changes'}

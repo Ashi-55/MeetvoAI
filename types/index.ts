@@ -24,7 +24,7 @@ export interface Profile {
 }
 
 export interface BuilderProfile {
-  user_id: string;
+  id: string;
   full_name?: string;
   avatar_url?: string | null;
 
@@ -65,6 +65,10 @@ export interface BuyerProfile {
   business_name?: string;
   industry?: string | null;
   website?: string | null;
+  needs?: string[];
+  description?: string | null;
+  budget_range?: string | null;
+  location?: string | null;
   created_at?: string;
 }
 
@@ -228,6 +232,7 @@ export interface StudioBuild {
   status?: string;
   created_at?: string;
   updated_at?: string;
+  name?: string;
 }
 
 export interface DeployedAgent {

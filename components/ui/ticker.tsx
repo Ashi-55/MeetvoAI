@@ -17,13 +17,13 @@ export function Ticker({ items, className }: TickerProps) {
 
   return (
     <div
-      className={cn('w-full overflow-hidden rounded-lg bg-[#0A0F1E]', className)}
+      className={cn('w-full overflow-hidden rounded-lg bg-[#08080F]', className)}
       aria-label="ticker"
     >
       <div
         className="flex items-center gap-4 px-4 py-3"
       >
-        <span className="text-xs font-medium text-white/60 mr-2">Verified</span>
+        <span className="text-xs font-medium text-white/60 mr-2">Trusted</span>
 
         <div className="relative flex-1">
           <div

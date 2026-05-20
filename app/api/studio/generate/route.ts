@@ -64,3 +64,4 @@ Return ONLY valid JSON, no markdown.`;
     return NextResponse.json({ error: 'Generation failed' }, { status: 500 });
   }
 }
+

@@ -22,19 +22,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: createError?.message || 'Failed to create user.' }, { status: 500 });
     }
 
-    const { data: profileData, error: profileError } = await service.from('profiles').insert({
+    // Create profile for the user
+    // We omit current_mode so it will use the database default,
+    // then we update it to null in a separate step
+    const { error: profileCreateError } = await service.from('profiles').insert({
       id: createData.user.id,
       full_name,
       email,
-      current_mode: 'buyer',
-      buyer_onboarding_complete: false,
-      builder_onboarding_complete: false,
     });
 
+    if (profileCreateError) {
+      console.error('Profile insert failed:', profileCreateError);
+      // Don't fail here - profile might already exist from auth trigger
+    }
+
+    // Explicitly set current_mode to null for role selection on welcome page
+    const { error: profileError } = await service.from('profiles').update({
+      current_mode: null,
+      buyer_onboarding_complete: false,
+      builder_onboarding_complete: false,
+    }).eq('id', createData.user.id);
+
     if (profileError) {
-      console.error('Profile insert failed:', profileError);
+      console.error('Profile upsert failed:', profileError);
       return NextResponse.json({
-        error: profileError.message || 'Failed to create user profile. Ensure the profiles table exists in Supabase.',
+        error: profileError.message || 'Failed to create or update user profile. Ensure the profiles table exists in Supabase.',
       }, { status: 500 });
     }
 

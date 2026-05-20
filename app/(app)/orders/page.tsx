@@ -51,7 +51,7 @@ export default function OrdersPage() {
   async function loadOrders() {
     setLoading(true);
     const supabase = createClient();
-    let q = supabase.from('orders').select('*, buyer:profiles!orders_buyer_id_fkey(full_name, email), builder:profiles!orders_builder_id_fkey(full_name), agent:agents(name), buyer_profile:buyer_profiles(business_name), builder_profile:builder_profiles(verification_status)');
+    let q = supabase.from('orders').select('*, buyer:profiles!orders_buyer_id_fkey(full_name, email), builder:profiles!orders_builder_id_fkey(full_name), agent:agents(name), buyer_profile:buyer_profiles(business_name), builder_profile:builder_profiles(*)');
     if (tab === 'buying') q = q.eq('buyer_id', user!.id);
     else q = q.eq('builder_id', user!.id);
     const { data } = await q.order('created_at', { ascending: false });

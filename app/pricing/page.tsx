@@ -1,83 +1,66 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Check, Shield, Star } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
-
-function moneyINR(n: number) {
-  try {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
-  } catch {
-    return `₹${n}`;
-  }
-}
 
 type Billing = 'monthly' | 'annual';
 
-function PlanCard({
-  title,
-  price,
-  highlight,
-  features,
-  includePlatformFee,
-  platformFeeText,
-  button,
-}: {
+type Plan = {
   title: string;
-  price: number;
+  monthly: number | null;
   highlight?: boolean;
-  features: Array<{ label: string; enabled: boolean }>;
-  includePlatformFee?: boolean;
-  platformFeeText?: string;
-  button: { label: string; variant: 'solid' | 'outline' | 'purple' | 'teal' };
-}) {
-  const btnClass =
-    button.variant === 'solid'
-      ? 'bg-brand hover:bg-brand2 text-white'
-      : button.variant === 'purple'
-      ? 'bg-brand2 hover:bg-brand2/90 text-white'
-      : button.variant === 'teal'
-      ? 'bg-teal-500 hover:bg-teal-600 text-white'
-      : 'bg-transparent border border-border text-text3 hover:bg-surface2';
+  button: string;
+};
+
+function moneyINR(value: number) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function planPrice(plan: Plan, billing: Billing) {
+  if (plan.monthly === null) return { main: 'Custom', sub: 'Talk to sales' };
+  if (billing === 'monthly') return { main: moneyINR(plan.monthly), sub: 'per month' };
+  return { main: moneyINR(Math.round(plan.monthly * 12 * 0.9)), sub: 'per year, 10% off' };
+}
+
+function PlanCard({ plan, billing }: { plan: Plan; billing: Billing }) {
+  const price = planPrice(plan, billing);
 
   return (
-    <Card className={`p-6 border-border bg-surface ${highlight ? 'ring-2 ring-brand/40' : ''}`}>
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <div className="text-sm text-text3 font-semibold">{title}</div>
-          {highlight ? <div className="text-xs mt-1 inline-flex bg-brand/15 border border-brand/30 text-brand px-2 py-1 rounded-full">Popular</div> : null}
+    <Card className={`relative overflow-hidden rounded-2xl border border-[#1E1B3A] bg-[#100F1C] p-5 ${plan.highlight ? 'ring-2 ring-[#8B5CF6]/55' : ''}`}>
+      {plan.highlight && (
+        <div className="absolute right-4 top-4">
+          <Badge className="border border-[#8B5CF6]/40 bg-[#8B5CF6]/15 text-[#d8b4fe]">Popular</Badge>
         </div>
-      </div>
-
-      <div className="mt-5 flex items-baseline gap-2">
-        <div className="text-3xl font-extrabold text-text">{moneyINR(price)}</div>
-        <div className="text-text3 text-sm">/ {/** label is provided by caller below */} </div>
-      </div>
-
-      {includePlatformFee && platformFeeText ? (
-        <div className="mt-3 text-text3 text-sm">Platform fee: <span className="text-text font-semibold">{platformFeeText}</span></div>
-      ) : null}
-
-      <ul className="mt-5 space-y-2">
-        {features.map((f) => (
-          <li key={f.label} className="flex items-center gap-2 text-sm">
-            <span className={f.enabled ? 'text-green' : 'text-text3'}>
-              {f.enabled ? <Check size={16} /> : <span className="inline-block w-[16px] h-[16px] rounded-full border border-border" />}
-            </span>
-            <span className={f.enabled ? 'text-text' : 'text-text3'}>
-              {f.label}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      <div className="mt-6">
-        <Button className={`w-full ${btnClass}`}>{button.label}</Button>
+      )}
+      <div className="flex h-full min-h-[230px] flex-col">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B5CF6]/16 text-[#d8b4fe]">
+          <Sparkles size={18} />
+        </div>
+        <h3 className="mt-5 text-xl font-extrabold text-white">{plan.title}</h3>
+        <div className="mt-4">
+          <div className="text-3xl font-black text-white">{price.main}</div>
+          <div className="mt-1 text-sm text-[#9490B5]">{price.sub}</div>
+        </div>
+        {billing === 'annual' && plan.monthly !== null && (
+          <div className="mt-3 text-xs font-semibold text-[#68D391]">
+            Save {moneyINR(Math.round(plan.monthly * 12 * 0.1))} yearly
+          </div>
+        )}
+        <div className="mt-5 rounded-xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-[#b8aee0]">
+          Features will update soon.
+        </div>
+        <Button className="mt-auto w-full rounded-xl bg-[#8B5CF6] font-bold text-white hover:bg-[#7C3AED]">
+          {plan.button}
+        </Button>
       </div>
     </Card>
   );
@@ -86,245 +69,64 @@ function PlanCard({
 export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>('monthly');
 
-  const annualDiscount = 0.2;
-  const computed = (monthly: number) => {
-    if (billing === 'monthly') return monthly;
-    // annual shows monthly-equivalent after 20% off (simple UX)
-    return Math.round(monthly * (1 - annualDiscount));
-  };
-
-  const billingLabel = billing === 'monthly' ? 'month' : 'month (annual billed)';
-
-  const savings = billing === 'annual' ? '20% OFF' : null;
-
-  const businesses = [
-    {
-      key: 'free',
-      title: 'Free',
-      monthly: 0,
-      features: [
-        { label: 'Access to marketplace', enabled: true },
-        { label: 'Basic escrow tracking', enabled: true },
-        { label: 'AI Studio deployments', enabled: false },
-        { label: 'Priority verification', enabled: false },
-      ],
-      button: { label: 'Get Started Free', variant: 'outline' as const },
-    },
-    {
-      key: 'starter',
-      title: 'Starter',
-      monthly: 999,
-      features: [
-        { label: 'Everything in Free', enabled: true },
-        { label: 'AI Studio builds', enabled: true },
-        { label: 'Email notifications', enabled: true },
-        { label: 'Standard verification', enabled: true },
-      ],
-      button: { label: 'Start Free Trial', variant: 'teal' as const },
-    },
-    {
-      key: 'growth',
-      title: 'Growth',
-      monthly: 2499,
-      highlight: true,
-      features: [
-        { label: 'Everything in Starter', enabled: true },
-        { label: 'More deployments + history', enabled: true },
-        { label: 'Advanced analytics', enabled: true },
-        { label: 'Faster support', enabled: true },
-      ],
-      button: { label: 'Start Free Trial', variant: 'teal' as const },
-    },
-    {
-      key: 'pro',
-      title: 'Pro',
-      monthly: 4999,
-      features: [
-        { label: 'Everything in Growth', enabled: true },
-        { label: 'Custom workflows', enabled: true },
-        { label: 'Dedicated onboarding', enabled: true },
-        { label: 'Priority verification', enabled: true },
-      ],
-      button: { label: 'Contact Sales', variant: 'purple' as const },
-    },
+  const builderPlans: Plan[] = [
+    { title: 'Starter', monthly: 1999, button: 'Choose Starter' },
+    { title: 'Growth', monthly: 3499, highlight: true, button: 'Choose Growth' },
+    { title: 'Pro Agency', monthly: 7999, button: 'Choose Pro Agency' },
   ];
 
-  const builders = [
-    {
-      key: 'bfree',
-      title: 'Free',
-      monthly: 0,
-      features: [
-        { label: 'List agents on marketplace', enabled: true },
-        { label: 'Basic lead tracking', enabled: true },
-        { label: 'Lower platform fee', enabled: false },
-        { label: 'Verification boost', enabled: false },
-      ],
-      includePlatformFee: true,
-      platformFeeText: '10%+',
-      button: { label: 'Get Started Free', variant: 'outline' as const },
-    },
-    {
-      key: 'bstarter',
-      title: 'Starter',
-      monthly: 2000,
-      features: [
-        { label: 'Everything in Free', enabled: true },
-        { label: 'Higher visibility', enabled: true },
-        { label: 'Analytics for deals', enabled: true },
-        { label: 'Verification boost', enabled: true },
-      ],
-      includePlatformFee: true,
-      platformFeeText: '8%+',
-      button: { label: 'Start Free Trial', variant: 'teal' as const },
-    },
-    {
-      key: 'bgrowth',
-      title: 'Growth',
-      monthly: 5000,
-      highlight: true,
-      features: [
-        { label: 'Everything in Starter', enabled: true },
-        { label: 'More deployments + workspace', enabled: true },
-        { label: 'Priority review queue', enabled: true },
-        { label: 'Team seats', enabled: true },
-      ],
-      includePlatformFee: true,
-      platformFeeText: '6%+',
-      button: { label: 'Start Free Trial', variant: 'teal' as const },
-    },
-    {
-      key: 'bpro',
-      title: 'Business',
-      monthly: 15000,
-      features: [
-        { label: 'Everything in Growth', enabled: true },
-        { label: 'Dedicated account manager', enabled: true },
-        { label: 'Custom pricing & SLA', enabled: true },
-        { label: 'Enterprise verification support', enabled: true },
-      ],
-      includePlatformFee: true,
-      platformFeeText: '4%+',
-      button: { label: 'Contact Sales', variant: 'purple' as const },
-    },
+  const businessPlans: Plan[] = [
+    { title: 'Starter', monthly: 2999, button: 'Choose Starter' },
+    { title: 'Growth', monthly: 3999, highlight: true, button: 'Choose Growth' },
+    { title: 'Pro Agency', monthly: 8999, button: 'Choose Pro Agency' },
+    { title: 'Enterprise', monthly: null, button: 'Contact Sales' },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-3xl font-extrabold">Simple, Transparent Pricing</h1>
-          <p className="text-text3 mt-2">Choose monthly or annual billing. Annual gives you 20% off.</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-surface rounded-xl border border-border p-2">
-            <Button
-              className={billing === 'monthly' ? 'bg-brand hover:bg-brand2 text-white' : 'bg-transparent border border-border text-text3 hover:bg-surface2'}
-              onClick={() => setBilling('monthly')}
-              variant="outline"
-            >
-              Monthly
-            </Button>
-            <Button
-              className={billing === 'annual' ? 'bg-brand hover:bg-brand2 text-white' : 'bg-transparent border border-border text-text3 hover:bg-surface2'}
-              onClick={() => setBilling('annual')}
-              variant="outline"
-            >
-              Annual
-            </Button>
+    <main className="min-h-screen bg-[#08080F] px-4 py-10 text-white lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#ae9bc9]">AI Studio Pricing</p>
+            <h1 className="mt-3 text-3xl font-black">Simple plans for builders and businesses</h1>
+            <p className="mt-2 max-w-2xl text-sm text-[#9490B5]">
+              Pay monthly or choose yearly billing with a 10% offer.
+            </p>
           </div>
-          {savings ? <Badge className="bg-teal-500/10 border border-teal-500/30 text-teal-200">{savings}</Badge> : null}
-        </div>
-      </div>
 
-      <div className="mt-8">
-        <Tabs defaultValue="businesses">
-          <TabsList className="w-full justify-start">
-            <TabsTrigger value="businesses" className="flex-1">🏢 For Businesses</TabsTrigger>
-            <TabsTrigger value="builders" className="flex-1">👨‍💻 For Builders</TabsTrigger>
+          <div className="flex rounded-2xl border border-[#1E1B3A] bg-[#100F1C] p-1">
+            {(['monthly', 'annual'] as const).map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setBilling(item)}
+                className={`rounded-xl px-5 py-2 text-sm font-bold capitalize transition ${billing === item ? 'bg-[#ae9bc9] text-[#08080F]' : 'text-[#9490B5] hover:text-white'}`}
+              >
+                {item === 'annual' ? 'Yearly -10%' : 'Monthly'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <Tabs defaultValue="businesses" className="mt-8">
+          <TabsList className="grid w-full grid-cols-2 rounded-2xl border border-[#1E1B3A] bg-[#100F1C] p-1">
+            <TabsTrigger value="businesses" className="rounded-xl">For Businesses</TabsTrigger>
+            <TabsTrigger value="builders" className="rounded-xl">For Builders</TabsTrigger>
           </TabsList>
 
           <TabsContent value="businesses" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {businesses.map((p) => (
-                <div key={p.key}>
-                  <PlanCard
-                    title={p.title}
-                    price={computed(p.monthly)}
-                    highlight={p.highlight}
-                    features={p.features}
-                    button={p.button}
-                  />
-                  <div className="mt-2 text-center text-xs text-text3">per {billingLabel}</div>
-                </div>
-              ))}
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {businessPlans.map((plan) => <PlanCard key={plan.title} plan={plan} billing={billing} />)}
             </div>
           </TabsContent>
 
           <TabsContent value="builders" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {builders.map((p) => (
-                <div key={p.key}>
-                  <PlanCard
-                    title={p.title}
-                    price={computed(p.monthly)}
-                    highlight={p.highlight}
-                    features={p.features}
-                    includePlatformFee={p.includePlatformFee}
-                    platformFeeText={p.platformFeeText}
-                    button={p.button}
-                  />
-                  <div className="mt-2 text-center text-xs text-text3">per {billingLabel}</div>
-                </div>
-              ))}
+            <div className="grid gap-4 md:grid-cols-3">
+              {builderPlans.map((plan) => <PlanCard key={plan.title} plan={plan} billing={billing} />)}
             </div>
           </TabsContent>
         </Tabs>
       </div>
-
-      <div className="mt-10">
-        <h2 className="text-xl font-extrabold">FAQ</h2>
-        <p className="text-text3 mt-2">Quick answers before you upgrade.</p>
-
-        <Accordion type="single" collapsible className="mt-6">
-          <AccordionItem value="marketplace">
-            <AccordionTrigger>About marketplace</AccordionTrigger>
-            <AccordionContent>
-              MeetvoAI verifies builders and helps businesses discover proven agents with transparent escrow-protected workflows.
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="escrow">
-            <AccordionTrigger>Escrow</AccordionTrigger>
-            <AccordionContent>
-              Payments are held securely until work is delivered and approved. Disputes are reviewed by the MeetvoAI team.
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="studio">
-            <AccordionTrigger>AI Studio</AccordionTrigger>
-            <AccordionContent>
-              Use Studio to generate, configure, and deploy AI agents. Track builds, revisions, and deployment status over time.
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="hosting">
-            <AccordionTrigger>Cloud hosting</AccordionTrigger>
-            <AccordionContent>
-              Deployments can be hosted so your agent runs live and responds through a delivery URL shared with the business.
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="verification">
-            <AccordionTrigger>Verification & trust</AccordionTrigger>
-            <AccordionContent>
-              Verification reduces risk. Builders and businesses gain visibility based on quality signals and successful deal history.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </div>
+    </main>
   );
 }
-

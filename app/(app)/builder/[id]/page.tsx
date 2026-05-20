@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { BadgeCheck, Clock, MessageSquare } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,7 +13,8 @@ import type { Profile, BuilderProfile, Agent, Review } from '@/types';
 export default function BuilderProfilePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const { user, profile: currentProfile } = useAuth();
   const { openChat } = useChatStore();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [builderProfile, setBuilderProfile] = useState<BuilderProfile | null>(null);
@@ -27,7 +28,7 @@ export default function BuilderProfilePage() {
       const [{ data: p }, { data: bp }, { data: a }, { data: r }] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', id).maybeSingle(),
         supabase.from('builder_profiles').select('*').eq('id', id).maybeSingle(),
-        supabase.from('agents').select('*, profiles(full_name, avatar_url), builder_profiles(verification_status, avg_rating, response_time_hours)').eq('builder_id', id).eq('status', 'published'),
+        supabase.from('agents').select('*, profiles(full_name, avatar_url), builder_profiles(avg_rating, response_time_hours)').eq('builder_id', id).eq('status', 'published'),
         supabase.from('reviews').select('*, reviewer:profiles(full_name)').eq('builder_id', id).order('created_at', { ascending: false }),
       ]);
       setProfile(p as Profile);
@@ -42,16 +43,46 @@ export default function BuilderProfilePage() {
   async function handleMessage() {
     if (!user) { router.push('/login'); return; }
     const supabase = createClient();
-    const { data: existing } = await supabase.from('conversations').select('id').eq('buyer_id', user.id).eq('builder_id', id).is('agent_id', null).maybeSingle();
+    const { data: existing, error: queryError } = await supabase.from('conversations').select('id').eq('buyer_id', user.id).eq('builder_id', id).is('agent_id', null).maybeSingle();
+    if (queryError) {
+      console.error('Conversation lookup failed:', queryError.message);
+    }
     let convId = existing?.id;
     if (!convId) {
-      const { data } = await supabase.from('conversations').insert({ buyer_id: user.id, builder_id: id }).select('id').single();
+      const { data, error: insertError } = await supabase.from('conversations').insert({ buyer_id: user.id, builder_id: id }).select('id').single();
+      if (insertError) {
+        console.error('Failed to create conversation:', insertError.message);
+      }
       convId = data?.id;
     }
-    if (convId && profile) {
-      openChat({ id: convId, participantId: id, participantName: profile.full_name ?? '', participantAvatar: profile.avatar_url ?? null, isVerified: builderProfile?.verification_status === 'verified', responseTimeHours: builderProfile?.response_time_hours || 24, isMinimised: false });
+    if (convId) {
+      openChat({
+        conversationId: convId,
+        participantId: id,
+        participantName: profile?.full_name || 'Builder',
+        participantAvatar: profile?.avatar_url ?? null,
+        isVerified: builderProfile?.verification_status === 'verified',
+        responseTimeHours: builderProfile?.response_time_hours || 24,
+        isMinimised: false,
+      });
+      router.push(`/builder/${id}?conversation=${encodeURIComponent(convId)}`);
     }
   }
+
+  useEffect(() => {
+    const conversationId = searchParams.get('conversation');
+    if (!conversationId || !user || !profile || !builderProfile) return;
+
+    openChat({
+      conversationId,
+      participantId: id,
+      participantName: profile.full_name || 'Builder',
+      participantAvatar: profile.avatar_url ?? null,
+      isVerified: builderProfile.verification_status === 'verified',
+      responseTimeHours: builderProfile.response_time_hours || 24,
+      isMinimised: false,
+    });
+  }, [searchParams, user, profile, builderProfile, openChat, id]);
 
   if (loading) return (
     <div className="max-w-4xl mx-auto px-4 py-8 animate-pulse space-y-6">

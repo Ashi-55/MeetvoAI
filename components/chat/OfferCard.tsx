@@ -39,6 +39,7 @@ export function OfferCard({ message, isMine, conversationId }: Props) {
       total_amount: total,
       delivery_days: offer.delivery_days,
       order_status: 'pending_payment',
+      escrow_status: 'pending',
     }).select('id').single();
     if (order) {
       await supabase.from('messages').update({ offer_data: { ...offer, status: 'accepted', order_id: order.id } }).eq('id', message.id);

@@ -35,6 +35,16 @@ export async function middleware(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession();
   const { pathname } = request.nextUrl;
 
+  // Some OAuth provider/Supabase configurations can send the auth code to `/`
+  // instead of `/auth/callback`. Normalize it here so Google sign-in still
+  // completes and lands on role selection.
+  if (pathname === '/' && request.nextUrl.searchParams.has('code')) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/auth/callback';
+    if (!url.searchParams.has('next')) url.searchParams.set('next', '/welcome');
+    return NextResponse.redirect(url);
+  }
+
   const protectedRoutes = ['/dashboard', '/studio', '/chat', '/orders'];
   const isProtected = protectedRoutes.some((p) => pathname.startsWith(p));
 
@@ -48,7 +58,7 @@ export async function middleware(request: NextRequest) {
 
   // If logged in, prevent access to login/signup
   if (session && (pathname === '/login' || pathname === '/signup')) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/welcome', request.url));
   }
 
   return response;
@@ -57,4 +67,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
 };
-

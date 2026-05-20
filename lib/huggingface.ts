@@ -45,12 +45,13 @@ export function extractJSON(text: string): unknown | null {
   }
 }
 
-export async function transcribeAudio(audioBuffer: ArrayBuffer): Promise<string> {
+export async function transcribeAudio(audioBuffer: ArrayBuffer, mimeType = 'audio/wav'): Promise<string> {
   try {
+    const contentType = mimeType || 'audio/wav';
     const res = await fetch('https://api-inference.huggingface.co/models/openai/whisper-large-v3', {
       method: 'POST',
       headers: {
-        'Content-Type': 'audio/wav',
+        'Content-Type': contentType,
         Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY ?? ''}`,
       },
       body: audioBuffer,

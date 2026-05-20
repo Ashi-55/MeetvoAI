@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 type NodeType = 'trigger' | 'ai_process' | 'action' | 'output' | string;
 
@@ -21,8 +21,8 @@ type DiagramConnection = {
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  trigger: '#4F8EF7',
-  ai_process: '#00C9A7',
+  trigger: '#ae9bc9',
+  ai_process: '#ae9bc9',
   action: '#7C5CBF',
   output: '#68D391',
 };
@@ -51,16 +51,30 @@ function clamp2Lines(text?: string) {
 
 export function WorkflowDiagram({
   automation,
+  animate,
 }: {
   automation: {
     nodes: DiagramNode[];
     connections: DiagramConnection[];
   };
+  animate?: boolean;
 }) {
   const nodes = automation?.nodes ?? [];
   const connections = automation?.connections ?? [];
 
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Trigger mount animation when automation or animate flag changes
+  useEffect(() => {
+    if (animate) {
+      setMounted(false);
+      const t = setTimeout(() => setMounted(true), 50);
+      return () => clearTimeout(t);
+    }
+    setMounted(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [automation, animate]);
 
   const layout = useMemo(() => {
     const maxNodes = nodes.length || 1;
@@ -124,7 +138,7 @@ export function WorkflowDiagram({
               orient="auto"
               markerUnits="strokeWidth"
             >
-              <path d="M0,0 L0,12 L12,6 z" fill="#1A2744" />
+              <path d="M0,0 L0,12 L12,6 z" fill="#1E1B3A" />
             </marker>
           </defs>
 
@@ -148,7 +162,7 @@ export function WorkflowDiagram({
                 key={`${c.from}-${c.to}-${idx}`}
                 d={d}
                 fill="none"
-                stroke="#1A2744"
+                stroke="#1E1B3A"
                 strokeWidth={2}
                 markerEnd="url(#wf-arrow)"
                 opacity={activeNodeId && (activeNodeId === c.from || activeNodeId === c.to) ? 1 : 0.85}
@@ -168,7 +182,14 @@ export function WorkflowDiagram({
               <g
                 key={n.id}
                 onClick={() => setActiveNodeId(n.id)}
-                style={{ cursor: 'pointer' }}
+                style={{
+                  cursor: 'pointer',
+                  transformOrigin: 'center',
+                  transition: 'opacity 360ms ease, transform 360ms ease',
+                  transitionDelay: `${(n._idx || 0) * 200}ms`,
+                  opacity: mounted ? 1 : 0,
+                  transform: mounted ? 'translateY(0)' : 'translateY(8px)',
+                }}
               >
                 <rect
                   x={n._x}
@@ -231,4 +252,5 @@ export function WorkflowDiagram({
     </div>
   );
 }
+
 

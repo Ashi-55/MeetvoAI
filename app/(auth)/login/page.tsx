@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -20,7 +20,7 @@ type FormData = z.infer<typeof schema>;
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get('next') || '/';
+  const next = searchParams.get('next') || '/welcome';
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -63,16 +63,6 @@ export default function LoginPage() {
           </div>
           <h2 className="text-4xl font-bold text-text mb-4">India's AI Automation Marketplace</h2>
           <p className="text-text2 text-lg">Find verified AI builders, deploy agents, grow your business.</p>
-        </div>
-        <div className="bg-surface2 rounded-xl p-6 border border-border">
-          <p className="text-text italic mb-4">"MeetvoAI helped us automate our WhatsApp lead qualification. Now our sales team focuses only on hot leads."</p>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white font-bold">R</div>
-            <div>
-              <p className="text-text font-semibold">Rahul Sharma</p>
-              <p className="text-text3 text-sm">CEO, PropTech Ventures</p>
-            </div>
-          </div>
         </div>
       </div>
 

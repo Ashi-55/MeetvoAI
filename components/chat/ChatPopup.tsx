@@ -63,14 +63,30 @@ export function ChatPopup({ session, offsetIndex }: Props) {
     if (!content.trim() || !user) return;
     setSending(true);
     if (detectExternalPayment(content)) setPaymentWarning(true);
-    await supabase.from('messages').insert({
+
+    const { data, error } = await supabase.from('messages').insert({
       conversation_id: session.conversationId,
       sender_id: user.id,
       content: content.trim(),
       message_type: 'text',
       contains_external_payment: detectExternalPayment(content),
-    });
-    await supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', session.conversationId);
+    }).select('*').single();
+
+    if (error) {
+      console.error('Failed to send chat message:', error.message);
+      setSending(false);
+      return;
+    }
+
+    if (data) {
+      setMessages((prev) => [...prev, data as Message]);
+    }
+
+    const { error: convError } = await supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', session.conversationId);
+    if (convError) {
+      console.error('Failed to update conversation timestamp:', convError.message);
+    }
+
     setInput('');
     setSending(false);
   }
@@ -79,15 +95,26 @@ export function ChatPopup({ session, offsetIndex }: Props) {
     if (!user || !offerDesc || !offerPrice || !offerDays) return;
     setSending(true);
     const { calculatePlatformFee } = await import('@/lib/fees');
-    const price = parseInt(offerPrice);
+    const price = parseInt(offerPrice, 10);
     const { platformFee, gst } = calculatePlatformFee(price);
-    await supabase.from('messages').insert({
+    const { data, error } = await supabase.from('messages').insert({
       conversation_id: session.conversationId,
       sender_id: user.id,
       content: null,
       message_type: 'offer_card',
-      offer_data: { description: offerDesc, price, delivery_days: parseInt(offerDays), status: 'pending', platformFee, gst },
-    });
+      offer_data: { description: offerDesc, price, delivery_days: parseInt(offerDays, 10), status: 'pending', platformFee, gst },
+    }).select('*').single();
+
+    if (error) {
+      console.error('Failed to send offer message:', error.message);
+      setSending(false);
+      return;
+    }
+
+    if (data) {
+      setMessages((prev) => [...prev, data as Message]);
+    }
+
     setShowOfferForm(false);
     setOfferDesc(''); setOfferPrice(''); setOfferDays('');
     setSending(false);
@@ -166,7 +193,7 @@ export function ChatPopup({ session, offsetIndex }: Props) {
       {paymentWarning && (
         <div className="mx-3 mb-2 bg-red/10 border border-red/30 rounded-lg px-3 py-2 flex items-start gap-2">
           <AlertTriangle size={14} className="text-red shrink-0 mt-0.5" />
-          <p className="text-red text-xs leading-tight">Pay inside MeetvoAI only. External payments remove all escrow protection and you cannot raise disputes.</p>
+          <p className="text-red text-xs leading-tight">Pay inside the platform only. External payments remove all escrow protection and you cannot raise disputes.</p>
         </div>
       )}
 
@@ -210,3 +237,4 @@ export function ChatPopup({ session, offsetIndex }: Props) {
     </motion.div>
   );
 }
+

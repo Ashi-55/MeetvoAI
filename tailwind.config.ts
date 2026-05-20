@@ -10,21 +10,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#FFFFFF',
-        surface: '#F7F8FA',
-        surface2: '#EEF0F5',
-        surface3: '#E2E5EE',
-        border: '#D8DCE8',
-        border2: '#BFC5D6',
-        text: '#0F1117',
-        text2: '#4A5068',
-        text3: '#8E96AD',
-        brand: '#5B21FF',
-        brand2: '#7C3AED',
-        green: '#059669',
-        amber: '#D97706',
-        red: '#DC2626',
-        blue: '#2563EB',
+        page: '#08080F',
+        background: '#08080F',
+        surface: '#100F1C',
+        surface2: '#0F172A',
+        surface3: '#1E1B3A',
+        border: '#1E1B3A',
+        border2: '#1E1B3A',
+        text: '#FFFFFF',
+        text2: '#9490B5',
+        text3: '#9490B5',
+        brand: '#862ffe',
+        brand2: '#744fa7',
+        'teal': '#ae9bc9',
+        'teal-dark': '#6F4EEA',
+        'dark-gradient-start': '#0D0B1A',
+        'dark-gradient-end': '#1E1B3A',
+        green: '#34D399',
+        amber: '#F59E0B',
+        red: '#F87171',
+        blue: '#A855F7',
       },
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'sans-serif'],
@@ -57,3 +62,4 @@ const config: Config = {
   plugins: [require('tailwindcss-animate')],
 };
 export default config;
+

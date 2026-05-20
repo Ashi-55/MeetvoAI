@@ -36,7 +36,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     async function load() {
       const supabase = createClient();
-      const { data } = await supabase.from('orders').select('*, buyer:profiles!orders_buyer_id_fkey(full_name, email), builder:profiles!orders_builder_id_fkey(full_name), agent:agents(name), buyer_profile:buyer_profiles(business_name), builder_profile:builder_profiles(verification_status)').eq('id', id).maybeSingle();
+      const { data } = await supabase.from('orders').select('*, buyer:profiles!orders_buyer_id_fkey(full_name, email), builder:profiles!orders_builder_id_fkey(full_name), agent:agents(name), buyer_profile:buyer_profiles(business_name), builder_profile:builder_profiles(*)').eq('id', id).maybeSingle();
       if (data) setOrder(data as unknown as Order);
       setLoading(false);
     }

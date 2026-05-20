@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
-import { MeetvoLogo } from '@/components/ui/HandshakeLogo';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -45,11 +44,7 @@ export default function BuyerOnboardingPage() {
   const [loading, setLoading] = useState(false);
 
   function handleBack() {
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push('/');
-    }
+    router.push('/welcome');
   }
 
   const form1 = useForm<Step1Data>({ resolver: zodResolver(step1Schema) });
@@ -88,10 +83,10 @@ export default function BuyerOnboardingPage() {
       description: step2Data.description || null,
     });
 
-    await supabase.from('profiles').update({ buyer_onboarding_complete: true }).eq('id', user.id);
+    await supabase.from('profiles').update({ buyer_onboarding_complete: true, current_mode: 'buyer' }).eq('id', user.id);
     const { data: updatedProfile } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
     if (updatedProfile) setProfile(updatedProfile as typeof profile);
-    router.replace('/');
+    router.replace('/dashboard');
   }
 
   return (
@@ -106,10 +101,6 @@ export default function BuyerOnboardingPage() {
             Explore Marketplace
           </Link>
         </div>
-        <div className="mb-8">
-          <MeetvoLogo size="sm" />
-        </div>
-
         <div className="flex items-center gap-2 mb-8">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-2">

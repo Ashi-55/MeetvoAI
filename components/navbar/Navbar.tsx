@@ -1,15 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MessageSquare, Bell, Menu, X } from 'lucide-react';
-import { MeetvoLogo } from '@/components/ui/HandshakeLogo';
+import { Bell, MessageSquare, Menu, X } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { AvatarDropdown } from './AvatarDropdown';
-import { createClient } from '@/lib/supabase/client';
+
+const NAV_LINKS = [
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Marketplace', href: '/marketplace' },
+  { label: 'Studio', href: '/studio' },
+  { label: 'Pricing', href: '/pricing' },
+];
+
+const PUBLIC_NAV_LINKS = [
+  { label: 'Home', href: '/#home' },
+  { label: 'Services', href: '/#services' },
+  { label: 'How It Works', href: '/#how-it-works' },
+  { label: 'Pricing', href: '/pricing' },
+];
 
 export function Navbar() {
   const router = useRouter();
@@ -17,6 +30,15 @@ export function Navbar() {
   const { totalUnread } = useChatStore();
   const { unreadCount } = useNotificationStore();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const navLinks = user ? NAV_LINKS : PUBLIC_NAV_LINKS;
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 16);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -25,56 +47,97 @@ export function Navbar() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 bg-surface border-b border-border z-50 flex items-center px-4 gap-4">
-      <Link href="/" className="shrink-0">
-        <MeetvoLogo size="sm" />
-      </Link>
+    <header className={`fixed inset-x-0 top-0 z-50 h-16 border-b border-[#1E1B3A] transition-all duration-300 ${scrolled ? 'backdrop-blur-xl bg-[#08080F]/95' : 'bg-[#08080F]'}`}>
+      <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center gap-3 font-semibold text-white">
+          <span className="text-lg font-black tracking-[-0.03em]">
+            Meetvo<span style={{ color: '#7C5CFC' }}>AI</span>
+          </span>
+        </Link>
 
-      <div className="flex-1 max-w-xl hidden md:block" />
-
-      {user ? (
-        <div className="flex items-center gap-1 ml-auto">
-          <Link href="/messages" className="relative p-2 rounded-lg hover:bg-surface2 transition-colors text-text2 hover:text-text">
-            <MessageSquare size={20} />
-            {totalUnread > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red rounded-full text-xs text-white flex items-center justify-center font-bold">
-                {totalUnread > 9 ? '9+' : totalUnread}
-              </span>
-            )}
-          </Link>
-          <button className="relative p-2 rounded-lg hover:bg-surface2 transition-colors text-text2 hover:text-text">
-            <Bell size={20} />
-            {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red rounded-full text-xs text-white flex items-center justify-center font-bold">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
-          <AvatarDropdown profile={profile} onSignOut={handleSignOut} />
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 ml-auto">
-          <Link href="/login" className="text-text2 hover:text-text px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Login</Link>
-          <Link href="/signup" className="bg-brand hover:bg-brand2 text-white px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors">Sign up</Link>
-        </div>
-      )}
-
-      <button className="md:hidden ml-1 p-2 text-text2" onClick={() => setMobileOpen(!mobileOpen)}>
-        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-
-      {mobileOpen && (
-        <div className="absolute top-14 left-0 right-0 bg-surface border-b border-border p-4 md:hidden">
-          {user && (
-            <div className="mt-3 space-y-1">
-              <Link href="/messages" className="flex items-center gap-2 p-2 rounded-lg hover:bg-surface2 text-text2" onClick={() => setMobileOpen(false)}>
-                <MessageSquare size={18} /> Messages
+        <nav className="absolute inset-x-0 top-0 hidden h-full items-center justify-center md:flex pointer-events-none">
+          <div className="inline-flex pointer-events-auto rounded-full border border-[#1E1B3A] bg-[#100F1C] p-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-full px-4 py-2 text-sm font-medium text-[#9490B5] transition hover:bg-[#1E1B3A] hover:text-white ${link.href === '/studio' ? 'ai-studio-nav-link' : ''}`}
+              >
+                <span>{link.label}</span>
+                {link.href === '/studio' && <span className="studio-new-badge">NEW</span>}
               </Link>
-              <Link href="/orders" className="flex items-center gap-2 p-2 rounded-lg hover:bg-surface2 text-text2" onClick={() => setMobileOpen(false)}>Orders</Link>
-              <Link href="/settings" className="flex items-center gap-2 p-2 rounded-lg hover:bg-surface2 text-text2" onClick={() => setMobileOpen(false)}>Settings</Link>
-              <button onClick={handleSignOut} className="w-full text-left flex items-center gap-2 p-2 rounded-lg hover:bg-surface2 text-red">Sign out</button>
+            ))}
+          </div>
+        </nav>
+
+        <div className="ml-auto flex items-center gap-3">
+          {user ? (
+            <>
+              <Link href="/messages" className="relative inline-flex items-center justify-center rounded-2xl border border-[#1E1B3A] bg-[#100F1C] p-2 text-[#9490B5] transition hover:border-[#7C5CFC] hover:text-white">
+                <MessageSquare size={18} />
+                {totalUnread > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red text-[10px] font-semibold text-white px-1.5">
+                    {totalUnread > 9 ? '9+' : totalUnread}
+                  </span>
+                )}
+              </Link>
+              <button className="relative inline-flex items-center justify-center rounded-2xl border border-[#1E1B3A] bg-[#100F1C] p-2 text-[#9490B5] transition hover:border-[#7C5CFC] hover:text-white">
+                <Bell size={18} />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red text-[10px] font-semibold text-white px-1.5">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              <AvatarDropdown profile={profile} onSignOut={handleSignOut} />
+            </>
+          ) : (
+            <div className="hidden items-center gap-3 md:flex">
+              <Link href="/login" className="text-sm font-medium text-[#9490B5] transition hover:text-white">Sign In</Link>
+              <Link href="/signup" className="rounded-2xl bg-[#7C5CFC] px-4 py-2 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA]">Get Started Free</Link>
             </div>
           )}
+
+          <button className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#1E1B3A] bg-[#100F1C] text-[#9490B5] transition hover:border-[#7C5CFC] hover:text-white md:hidden" onClick={() => setMobileOpen((prev) => !prev)}>
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {mobileOpen && (
+        <div className="md:hidden border-t border-[#1E1B3A] bg-[#08080F] px-4 py-4">
+          <div className="space-y-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`block rounded-2xl border border-[#1E1B3A] bg-[#100F1C] px-4 py-3 text-sm font-medium text-[#9490B5] transition hover:bg-[#1E1B3A] hover:text-white ${link.href === '/studio' ? 'ai-studio-nav-link' : ''}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                <span>{link.label}</span>
+                {link.href === '/studio' && <span className="studio-new-badge">NEW</span>}
+              </Link>
+            ))}
+            {user ? (
+              <>
+                <Link href="/messages" className="block rounded-2xl border border-[#1E1B3A] bg-[#100F1C] px-4 py-3 text-sm font-medium text-[#9490B5] transition hover:bg-[#1E1B3A] hover:text-white" onClick={() => setMobileOpen(false)}>
+                  Messages
+                </Link>
+                <button onClick={handleSignOut} className="w-full rounded-2xl border border-[#1E1B3A] bg-[#100F1C] px-4 py-3 text-left text-sm font-medium text-[#9490B5] transition hover:bg-[#1E1B3A] hover:text-white">
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="block rounded-2xl border border-[#1E1B3A] bg-[#100F1C] px-4 py-3 text-sm font-medium text-[#9490B5] transition hover:bg-[#1E1B3A] hover:text-white" onClick={() => setMobileOpen(false)}>
+                  Sign In
+                </Link>
+                <Link href="/signup" className="block rounded-2xl bg-[#7C5CFC] px-4 py-3 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA]" onClick={() => setMobileOpen(false)}>
+                  Get Started Free
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
     </header>

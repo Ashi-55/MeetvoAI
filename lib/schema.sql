@@ -43,22 +43,30 @@ create table if not exists public.profiles (
 -- 2) builder_profiles
 -- ============
 create table if not exists public.builder_profiles (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null unique references public.profiles(id) on delete cascade,
+  id uuid references public.profiles(id) on delete cascade primary key,
+  title text not null,
+  bio text not null,
+  linkedin_url text,
+  specialties text[] not null default '{}',
   skills text[] not null default '{}',
-  specializations text[] not null default '{}',
-  title text,
   hourly_rate integer,
-  verified boolean not null default false,
-  verification_status text,
-  rating numeric(3,2) default 0,
+  experience_years integer default 0,
+  languages text[] default array['English'],
+  whatsapp_number text,
+  verification_status text check (verification_status in ('pending_verification', 'verified', 'rejected')) default 'pending_verification',
+  verification_notes text,
+  show_on_hire_page boolean default false,
   total_deals integer default 0,
-  total_earned numeric(14,2) default 0,
-  subscription_plan text default 'free',
-  available boolean not null default true,
-  demo_video_url text,
-  show_on_marketplace boolean not null default false,
-  created_at timestamptz not null default now()
+  total_earnings numeric(14,2) default 0,
+  avg_rating numeric(3,2) default 0,
+  response_time_hours integer default 24,
+  active_subscription_id uuid,
+  subscription_plan text check (subscription_plan in ('starter', 'growth', 'business')),
+  subscription_status text check (subscription_status in ('active', 'inactive', 'cancelled')) default 'inactive',
+  subscription_ends_at timestamptz,
+  studio_builds_used integer default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 -- ============
@@ -305,13 +313,13 @@ with check (id = auth.uid());
 DROP POLICY IF EXISTS builder_profiles_select_own ON public.builder_profiles;
 create policy builder_profiles_select_own
 on public.builder_profiles for select
-using (user_id = auth.uid());
+using (id = auth.uid());
 
 DROP POLICY IF EXISTS builder_profiles_write_own ON public.builder_profiles;
 create policy builder_profiles_write_own
 on public.builder_profiles for all
-using (user_id = auth.uid())
-with check (user_id = auth.uid());
+using (id = auth.uid())
+with check (id = auth.uid());
 
 -- Business profiles: users manage own business profile row
 DROP POLICY IF EXISTS business_profiles_select_own ON public.business_profiles;

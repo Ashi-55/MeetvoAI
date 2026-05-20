@@ -212,7 +212,7 @@ export function FilterBar({
                     onChange={(e) => setDraft((d) => ({ ...d, verifiedOnly: e.target.checked }))}
                     className="accent-teal-400"
                   />
-                  <span>Verified Only</span>
+                  <span>Trusted Only</span>
                 </label>
 
                 <label className="flex items-center gap-2 text-sm text-text2 cursor-pointer select-none">

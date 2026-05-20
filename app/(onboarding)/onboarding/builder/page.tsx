@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
-import { MeetvoLogo } from '@/components/ui/HandshakeLogo';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -31,6 +30,9 @@ const LANGUAGES = ['English', 'Hindi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam'
 
 export default function BuilderOnboardingPage() {
   const router = useRouter();
+  function handleBack() {
+    router.push('/welcome');
+  }
   const setProfile = useAuthStore((state) => state.setProfile);
   const profile = useAuthStore((state) => state.profile);
   const [step, setStep] = useState(1);
@@ -63,9 +65,11 @@ export default function BuilderOnboardingPage() {
     setLoading(true);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user || !step1Data || !step2Data) return;
-
-    await supabase.from('builder_profiles').upsert({
+    if (!user || !step1Data || !step2Data) {
+      setLoading(false);
+      return;
+    }
+    const { data: bpData, error: bpError } = await supabase.from('builder_profiles').upsert({
       id: user.id,
       title: step1Data.title,
       bio: step2Data.bio,
@@ -75,20 +79,43 @@ export default function BuilderOnboardingPage() {
       skills,
       languages: selectedLanguages,
       whatsapp_number: step2Data.whatsapp_number || null,
-      verification_status: 'pending_verification',
-    });
+    }, { onConflict: 'id' });
 
-    await supabase.from('profiles').update({ builder_onboarding_complete: true, current_mode: 'builder' }).eq('id', user.id);
+    if (bpError) {
+      // show console error and stop so developer can see why upsert failed
+      // (common causes: RLS, missing profile row, invalid data)
+      // eslint-disable-next-line no-console
+      console.error('builder_profiles upsert error', bpError);
+      setLoading(false);
+      alert(`Failed to publish profile: ${bpError.message}`);
+      return;
+    }
+
+    const { error: pError } = await supabase.from('profiles').update({ builder_onboarding_complete: true, current_mode: 'builder' }).eq('id', user.id);
+    if (pError) {
+      // eslint-disable-next-line no-console
+      console.error('profiles update error', pError);
+      setLoading(false);
+      alert('Failed to update profile state. Check console for details.');
+      return;
+    }
+
     setProfile(profile ? { ...profile, builder_onboarding_complete: true, current_mode: 'builder' } : profile);
-    setStep(5);
     setLoading(false);
+    router.replace('/dashboard/builder');
+  }
+
+  function handleExploreMarketplace() {
+    router.push('/dashboard/builder');
   }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">
       <div className="w-full max-w-lg">
-        <div className="mb-8">
-          <MeetvoLogo size="sm" />
+        <div className="mb-8 flex items-center justify-start gap-4">
+          <button type="button" onClick={handleBack} className="inline-flex items-center gap-2 text-sm text-text2 hover:text-text">
+            <ChevronLeft size={18} /> Back
+          </button>
         </div>
 
         <div className="flex items-center gap-1 mb-8">
@@ -222,7 +249,7 @@ export default function BuilderOnboardingPage() {
 
           {step === 4 && (
             <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <h1 className="text-2xl font-bold text-text mb-2">Almost done!</h1>
+              <h1 className="text-2xl font-bold text-text mb-2">Ready to go live!</h1>
               <p className="text-text2 mb-6">Step 4 of 5</p>
               <div className="bg-surface rounded-xl border border-border p-6 space-y-4 mb-6">
                 <h3 className="font-semibold text-text">Profile Summary</h3>
@@ -240,7 +267,7 @@ export default function BuilderOnboardingPage() {
                 </button>
                 <button type="button" onClick={finish} disabled={loading}
                   className="flex-1 bg-brand hover:bg-brand2 disabled:opacity-50 text-white rounded-lg px-4 py-3 font-semibold transition-colors">
-                  {loading ? 'Submitting...' : 'Submit for Verification'}
+                  {loading ? 'Publishing...' : 'Publish Profile'}
                 </button>
               </div>
             </motion.div>
@@ -248,18 +275,18 @@ export default function BuilderOnboardingPage() {
 
           {step === 5 && (
             <motion.div key="s5" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
-              <div className="w-20 h-20 rounded-full bg-amber/20 flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl">⏳</span>
+              <div className="w-20 h-20 rounded-full bg-green/20 flex items-center justify-center mx-auto mb-6">
+                <span className="text-3xl">✓</span>
               </div>
-              <h1 className="text-2xl font-bold text-text mb-2">Profile submitted for verification</h1>
-              <p className="text-text2 mb-2">Our team will review your profile within 24 hours.</p>
-              <p className="text-text3 text-sm mb-8">You'll be notified via email and WhatsApp.</p>
-              <div className="bg-amber/10 border border-amber/30 rounded-xl p-4 mb-8">
-                <p className="text-amber text-sm font-medium">Verification Status: Pending Review</p>
+              <h1 className="text-2xl font-bold text-text mb-2">Your profile is now live!</h1>
+              <p className="text-text2 mb-2">Businesses can now find and contact you on the marketplace.</p>
+              <p className="text-text3 text-sm mb-8">Start building agents in the AI Studio to showcase your work.</p>
+              <div className="bg-green/10 border border-green/30 rounded-xl p-4 mb-8">
+                <p className="text-green text-sm font-medium">✓ Visible to Businesses</p>
               </div>
-              <button onClick={() => router.push('/studio')}
+              <button onClick={handleExploreMarketplace} disabled={loading}
                 className="w-full bg-brand hover:bg-brand2 text-white rounded-lg px-4 py-3 font-semibold transition-colors">
-                Meanwhile, explore the AI Studio
+                {loading ? 'Setting up your account...' : 'Explore Marketplace'}
               </button>
             </motion.div>
           )}

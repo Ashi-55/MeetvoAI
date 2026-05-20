@@ -10,8 +10,8 @@ type WorkflowPayload = {
   summary: string;
 };
 
-const GEMINI_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 function detectMode(prompt: string): 'website' | 'automation' | 'combination' {
   const lower = prompt.toLowerCase();
@@ -45,44 +45,54 @@ function detectBusinessType(prompt: string) {
   return { type: 'business', color: '#553c9a', emoji: '🏢' };
 }
 
-async function callGemini(prompt: string): Promise<string> {
-  if (!GEMINI_KEY) return '';
+async function callOpenRouter(prompt: string, language?: string): Promise<string> {
+  if (!OPENROUTER_KEY) {
+    console.error('OPENROUTER_API_KEY is not configured.');
+    return '';
+  }
 
   try {
-    const response = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
+    const response = await fetch(OPENROUTER_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${OPENROUTER_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://MeetvoAI.in',
+        'X-Title': 'MeetvoAI',
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 8192,
-        },
+        model: 'meta-llama/llama-3.1-8b-instruct',
+        messages: [
+          { role: 'system', content: 'You are an expert AI assistant. Answer the user request directly and do not add any extra explanation or commentary.' },
+          ...(language ? [{ role: 'system', content: `Prefer responses in language: ${language}` }] : []),
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.2,
+        top_p: 1,
+        max_tokens: 2000,
+        stream: false,
       }),
     });
 
-    if (!response.ok) return '';
+    if (!response.ok) {
+      const body = await response.text();
+      console.error('OpenRouter request failed', response.status, body);
+      return '';
+    }
+
     const data = await response.json();
-    const candidate = Array.isArray(data?.candidates) ? data.candidates[0] : undefined;
-    if (!candidate) return '';
-
-    if (Array.isArray(candidate?.content)) {
-      return candidate.content.map((chunk: any) => chunk?.text || '').join(' ').trim();
-    }
-
-    if (Array.isArray(candidate?.content?.parts)) {
-      return candidate.content.parts.map((part: any) => part?.text || '').join(' ').trim();
-    }
-
-    return String(candidate?.content || '').trim();
-  } catch {
+    const content = data?.choices?.[0]?.message?.content || data?.choices?.[0]?.text;
+    return typeof content === 'string' ? content.trim() : '';
+  } catch (error) {
+    console.error('OpenRouter call failed', error);
     return '';
   }
 }
 
 async function generateWebsiteHTML(
   userPrompt: string,
-  businessType: { type: string; color: string; emoji: string }
+  businessType: { type: string; color: string; emoji: string },
+  language?: string
 ): Promise<string> {
   const geminiPrompt = `You are an expert web designer and developer.
 Create a COMPLETE, BEAUTIFUL, PRODUCTION-READY HTML website.
@@ -111,7 +121,7 @@ STRICT RULES:
 
 Generate the complete HTML now:`;
 
-  const html = await callGemini(geminiPrompt);
+  const html = await callOpenRouter(geminiPrompt, language);
   const cleaned = html.replace(/```html/gi, '').replace(/```/g, '').trim();
   if (cleaned.includes('<html') || cleaned.includes('<!DOCTYPE')) return cleaned;
   return generateFallbackHTML(userPrompt, businessType);
@@ -219,7 +229,7 @@ footer { background:#1a1a1a; color:white; padding:32px 48px; text-align:center; 
 </html>`;
 }
 
-async function generateWorkflowNodes(userPrompt: string): Promise<WorkflowPayload> {
+async function generateWorkflowNodes(userPrompt: string, language?: string): Promise<WorkflowPayload> {
   const geminiPrompt = `You are an automation workflow expert.
 The user wants to automate their business.
 User request: "${userPrompt}"
@@ -240,7 +250,7 @@ Return ONLY valid JSON. No markdown. No explanation. No backticks.
       "id": "2",
       "type": "ai_process",
       "name": "AI Understanding",
-      "platform": "meetvoai",
+      "platform": "MeetvoAI",
       "description": "AI reads and understands the message",
       "icon": "🤖"
     },
@@ -285,7 +295,7 @@ Platforms allowed: whatsapp, telegram, google_sheets, email, instagram, razorpay
 Make nodes specific and relevant to: "${userPrompt}"
 Generate 4 to 6 nodes total. Return only JSON:`;
 
-  const text = await callGemini(geminiPrompt);
+  const text = await callOpenRouter(geminiPrompt, language);
   const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
   const match = cleaned.match(/\{[\s\S]*\}/);
   if (match) {
@@ -295,7 +305,7 @@ Generate 4 to 6 nodes total. Return only JSON:`;
   return {
     nodes: [
       { id: '1', type: 'trigger', name: 'WhatsApp Message', platform: 'whatsapp', description: 'Customer sends a message', icon: '💬' },
-      { id: '2', type: 'ai_process', name: 'AI Understanding', platform: 'meetvoai', description: 'AI reads and understands intent', icon: '🤖' },
+      { id: '2', type: 'ai_process', name: 'AI Understanding', platform: 'MeetvoAI', description: 'AI reads and understands intent', icon: '🤖' },
       { id: '3', type: 'action', name: 'Smart Reply', platform: 'whatsapp', description: 'Instant intelligent reply sent', icon: '💬' },
       { id: '4', type: 'action', name: 'Save to Sheets', platform: 'google_sheets', description: 'Customer details saved automatically', icon: '📊' },
       { id: '5', type: 'output', name: 'Notify Owner', platform: 'telegram', description: 'Owner gets instant alert', icon: '📱' },
@@ -313,9 +323,16 @@ Generate 4 to 6 nodes total. Return only JSON:`;
 
 export async function POST(req: Request) {
   try {
-    const { prompt, userType = 'business' } = (await req.json()) as { prompt: string; userType?: UserType };
+    const { prompt, language } = (await req.json()) as { prompt: string; language?: string };
     if (!prompt?.trim()) {
       return NextResponse.json({ error: 'Prompt required' }, { status: 400 });
+    }
+
+    if (!OPENROUTER_KEY) {
+      return NextResponse.json(
+        { error: 'OPENROUTER_API_KEY is missing. Add OPENROUTER_API_KEY to .env.local and your deployment environment.' },
+        { status: 500 }
+      );
     }
 
     const mode = detectMode(prompt);
@@ -325,11 +342,11 @@ export async function POST(req: Request) {
     let workflow: WorkflowPayload | null = null;
 
     if (mode === 'website' || mode === 'combination') {
-      html = await generateWebsiteHTML(prompt, businessType);
+      html = await generateWebsiteHTML(prompt, businessType, language);
     }
 
     if (mode === 'automation' || mode === 'combination') {
-      workflow = await generateWorkflowNodes(prompt);
+      workflow = await generateWorkflowNodes(prompt, language);
     }
 
     const words = prompt.replace(/[^a-zA-Z0-9\s]/g, '').split(' ').filter(Boolean);
@@ -339,40 +356,26 @@ export async function POST(req: Request) {
     const config = {
       mode,
       business_name: businessName,
-      business_type: businessType.type,
-      tagline: `Professional ${businessType.type} services`,
-      language_detected: /[\u0900-\u097F]/.test(prompt) ? 'hindi' : 'english',
-      website: {
-        needed: mode === 'website' || mode === 'combination',
-        pages: ['Home', 'Services', 'About', 'Contact'],
-        features: ['Contact Form', 'WhatsApp Button', 'Mobile Responsive'],
-        primary_color: businessType.color,
-        style: 'professional',
-      },
-      automation: {
-        needed: mode === 'automation' || mode === 'combination',
-        trigger: 'whatsapp_message',
-        integrations: workflow?.integrations || [],
-        nodes: workflow?.nodes || [],
-        connections: workflow?.connections || [],
-        summary: workflow?.summary || '',
-      },
-      deployment: {
-        suggested_subdomain: subdomain,
-        estimated_time: '15 minutes',
-      },
-      confirmation_message: `Your ${mode} has been generated successfully!`,
     };
 
     const serverSupabase = createClient();
     const { data: authData } = await serverSupabase.auth.getUser();
     const userId = authData?.user?.id;
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+
     try {
       const service = createServiceClient();
+      const { data: builderProfileData } = await service
+        .from('builder_profiles')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+      const userType = builderProfileData ? 'builder' : 'business';
+
       const { data, error } = await service.from('studio_builds').insert({
         prompt,
         builder_id: userId,
@@ -395,4 +398,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message || 'Generation failed' }, { status: 500 });
   }
 }
+
 

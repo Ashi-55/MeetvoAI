@@ -11,9 +11,11 @@ export async function POST(request: Request) {
     }
 
     const buf = await audio.arrayBuffer();
-    const text = await transcribeAudio(buf);
+    const mimeType = audio.type || 'audio/webm';
+    const lang = (formData.get('lang') as string) || 'en';
+    const text = await transcribeAudio(buf, mimeType);
 
-    return NextResponse.json({ text });
+    return NextResponse.json({ text, lang });
   } catch {
     return NextResponse.json({ error: 'Transcription failed' }, { status: 500 });
   }

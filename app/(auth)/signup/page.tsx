@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -97,16 +97,6 @@ export default function SignupPage() {
             ))}
           </div>
         </div>
-        <div className="bg-surface2 rounded-xl p-6 border border-border">
-          <p className="text-text italic mb-4">"Built and deployed our customer support agent in 3 days. Incredible platform."</p>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue flex items-center justify-center text-white font-bold">P</div>
-            <div>
-              <p className="text-text font-semibold">Priya Menon</p>
-              <p className="text-text3 text-sm">Founder, EduTech Startup</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-8">
@@ -124,14 +114,14 @@ export default function SignupPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-text2 mb-1.5">Full Name</label>
-              <input {...register('full_name')} placeholder="Rahul Sharma"
+              <input {...register('full_name')} placeholder="Your name"
                 className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text placeholder-text3 outline-none transition-colors" />
               {errors.full_name && <p className="text-red text-xs mt-1">{errors.full_name.message}</p>}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-text2 mb-1.5">Email</label>
-              <input {...register('email')} type="email" placeholder="you@example.com"
+              <input {...register('email')} type="email" placeholder="you@gmail.com"
                 className="w-full bg-surface2 border border-border focus:border-brand rounded-lg px-4 py-3 text-text placeholder-text3 outline-none transition-colors" />
               {errors.email && <p className="text-red text-xs mt-1">{errors.email.message}</p>}
             </div>

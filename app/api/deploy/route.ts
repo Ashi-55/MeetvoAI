@@ -66,9 +66,10 @@ export async function POST(request: Request) {
 
     await service.from('studio_builds').update({ status: 'deployed' }).eq('id', studio_build_id);
 
-    return NextResponse.json({ success: true, url: `${finalSub}.meetvoai.in` });
+    return NextResponse.json({ success: true, url: `${finalSub}.MeetvoAI.in` });
   } catch {
     return NextResponse.json({ success: false, error: 'Deploy failed' }, { status: 500 });
   }
 }
+
 

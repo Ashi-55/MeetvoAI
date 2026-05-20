@@ -51,7 +51,7 @@ export function CategoryTabs({
               style={{
                 borderBottomWidth: isActive ? 2 : 0,
                 borderBottomStyle: 'solid',
-                borderBottomColor: isActive ? 'rgba(0,201,167,1)' : 'transparent',
+                borderBottomColor: isActive ? 'rgba(174, 155, 201, 1)' : 'transparent',
               }}
               type="button"
             >
@@ -74,4 +74,5 @@ export function CategoryTabs({
     </div>
   );
 }
+
 

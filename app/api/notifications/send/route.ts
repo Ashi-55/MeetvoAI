@@ -48,7 +48,7 @@ export async function POST(request: Request) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
           body: JSON.stringify({
-            from: 'MeetvoAI <noreply@meetvoai.com>',
+            from: 'MeetvoAI <noreply@MeetvoAI.com>',
             to: payload.email,
             subject: payload.title,
             html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A0C; color: #F0EFF8; padding: 32px; border-radius: 12px;">
@@ -67,3 +67,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Notification failed' }, { status: 500 });
   }
 }
+
