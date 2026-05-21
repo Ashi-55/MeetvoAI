@@ -30,7 +30,7 @@ export function createServiceClient() {
   }
 
   return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!.trim().replace(/^["']|["']$/g, ''),
+    process.env.NEXT_PUBLIC_SUPABASE_URL!.trim().replace(/^["']|["']$/g, '').replace(/\/+$/, ''),
     serviceKey,
     { auth: { persistSession: false } }
   );

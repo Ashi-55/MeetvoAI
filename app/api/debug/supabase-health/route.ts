@@ -5,6 +5,10 @@ function clean(value?: string) {
   return (value || '').trim().replace(/^["']|["']$/g, '');
 }
 
+function cleanUrl(value?: string) {
+  return clean(value).replace(/\/+$/, '');
+}
+
 async function checkKey(label: string, key: string, url: string) {
   if (!key || !url) {
     return { label, ok: false, status: 'missing' };
@@ -61,7 +65,7 @@ async function checkAdminAccess(key: string, url: string) {
 }
 
 export async function GET() {
-  const url = clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const url = cleanUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
   const anonKey = clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   const serviceKey = clean(process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
 

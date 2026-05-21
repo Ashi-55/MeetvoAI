@@ -4,6 +4,10 @@ function clean(value?: string) {
   return (value || '').trim().replace(/^["']|["']$/g, '');
 }
 
+function cleanUrl(value?: string) {
+  return clean(value).replace(/\/+$/, '');
+}
+
 export async function POST(request: Request) {
   try {
     const { full_name, email, password } = await request.json();
@@ -12,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Full name, email, and password are required.' }, { status: 400 });
     }
 
-    const supabaseUrl = clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+    const supabaseUrl = cleanUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
     const anonKey = clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     const serviceKey = clean(process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
 
