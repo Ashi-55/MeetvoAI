@@ -425,24 +425,6 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto mb-20 max-w-7xl px-4 lg:px-8">
-        <div className="rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Testimonials</p>
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
-            {[
-              { quote: 'The platform helped us launch an order-bot in 3 days. Our team is saving hours every week.', name: 'Ananya, Restaurant Owner' },
-              { quote: 'I found a verified builder and the escrow flow made the whole process so easy.', name: 'Rohit, Retail Founder' },
-              { quote: 'The AI studio generated a working workflow faster than any agency pitch.', name: 'Sonia, Salon Owner' },
-            ].map((item) => (
-              <div key={item.name} className="rounded-3xl border border-[#1E1B3A] bg-[#0F172A] p-6">
-                <p className="text-lg text-white">"{item.quote}"</p>
-                <p className="mt-5 text-sm text-[#9490B5] font-semibold">{item.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="pricing" className="mx-auto mb-20 max-w-7xl px-4 lg:px-8">
         <div className="rounded-[36px] border border-[#ae9bc9] bg-[#08080F] p-8 shadow-teal">
           <div className="flex flex-col items-center text-center gap-6">
