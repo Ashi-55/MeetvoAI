@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 
+function clean(value?: string) {
+  return (value || '').trim().replace(/^["']|["']$/g, '');
+}
+
 export async function POST(request: Request) {
   try {
     const { full_name, email, password } = await request.json();
@@ -10,23 +14,35 @@ export async function POST(request: Request) {
     }
 
     const service = createServiceClient();
+    const supabaseUrl = clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+    const serviceKey = clean(process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-    const { data: createData, error: createError } = await service.auth.admin.createUser({
-      email,
-      password,
-      user_metadata: { full_name },
-      email_confirm: true,
+    const createResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+      method: 'POST',
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        user_metadata: { full_name },
+        email_confirm: true,
+      }),
     });
 
-    if (createError || !createData.user) {
-      return NextResponse.json({ error: createError?.message || 'Failed to create user.' }, { status: 500 });
+    const createData = await createResponse.json();
+
+    if (!createResponse.ok || !createData.id) {
+      return NextResponse.json({ error: createData.message || createData.error || 'Failed to create user.' }, { status: 500 });
     }
 
     // Create profile for the user
     // We omit current_mode so it will use the database default,
     // then we update it to null in a separate step
     const { error: profileCreateError } = await service.from('profiles').insert({
-      id: createData.user.id,
+      id: createData.id,
       full_name,
       email,
     });
@@ -41,7 +57,7 @@ export async function POST(request: Request) {
       current_mode: null,
       buyer_onboarding_complete: false,
       builder_onboarding_complete: false,
-    }).eq('id', createData.user.id);
+    }).eq('id', createData.id);
 
     if (profileError) {
       console.error('Profile upsert failed:', profileError);
