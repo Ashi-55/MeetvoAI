@@ -22,13 +22,15 @@ export function createClient() {
 }
 
 export function createServiceClient() {
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey = (process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '')
+    .trim()
+    .replace(/^["']|["']$/g, '');
   if (!serviceKey) {
     throw new Error('SUPABASE_SERVICE_KEY or SUPABASE_SERVICE_ROLE_KEY must be set');
   }
 
   return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!.trim().replace(/^["']|["']$/g, ''),
     serviceKey,
     { auth: { persistSession: false } }
   );
