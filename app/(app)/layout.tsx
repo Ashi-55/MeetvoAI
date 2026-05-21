@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (isLoading) return;
     if (!profile) return;
     // Skip redirect if user is already on auth/welcome/onboarding pages
-    if (pathname === '/login' || pathname === '/signup' || pathname === '/welcome' || pathname?.startsWith('/auth') || pathname?.startsWith('/onboarding')) return;
+    if (pathname === '/' || pathname === '/login' || pathname === '/signup' || pathname === '/welcome' || pathname?.startsWith('/auth') || pathname?.startsWith('/onboarding')) return;
 
     const hasCompletedAnyOnboarding = Boolean(profile.buyer_onboarding_complete || profile.builder_onboarding_complete);
     if (!hasCompletedAnyOnboarding) {

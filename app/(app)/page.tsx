@@ -1,12 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe, Search, Users, ChevronDown, Zap, Lock, Send, TrendingUp } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import { AgentCard, AgentCardSkeleton } from '@/components/marketplace/AgentCard';
 import { BuilderCard, BuilderCardSkeleton } from '@/components/marketplace/BuilderCard';
 import type { Agent, BuilderProfile, Profile } from '@/types';
@@ -112,19 +110,7 @@ function FAQAccordion({ question, answer }: { question: string; answer: string }
 }
 
 export default function HomePage() {
-  const router = useRouter();
-  const { user, builderProfile, isLoading } = useAuth();
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (user && builderProfile) {
-      router.replace('/studio');
-    }
-  }, [user, builderProfile, isLoading, router]);
-
-  if (!user) return <LandingPage />;
-  if (isLoading || builderProfile) return null;
-  return <MarketplacePage />;
+  return <LandingPage />;
 }
 
 function LandingPage() {

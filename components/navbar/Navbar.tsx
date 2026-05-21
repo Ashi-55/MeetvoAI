@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Bell, MessageSquare, Menu, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,12 +26,14 @@ const PUBLIC_NAV_LINKS = [
 
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, profile } = useAuth();
   const { totalUnread } = useChatStore();
   const { unreadCount } = useNotificationStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const navLinks = user ? NAV_LINKS : PUBLIC_NAV_LINKS;
+  const isPublicHome = pathname === '/';
+  const navLinks = user && !isPublicHome ? NAV_LINKS : PUBLIC_NAV_LINKS;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 16);
