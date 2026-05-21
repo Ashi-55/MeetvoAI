@@ -85,6 +85,12 @@ body {
     animation: ticker 20s linear infinite;
   }
 
+  .marquee {
+    display: inline-flex;
+    width: max-content;
+    animation: ticker 24s linear infinite;
+  }
+
   .gradient-text {
     background: linear-gradient(135deg, #ae9bc9, #ae9bc9);
     -webkit-background-clip: text;
