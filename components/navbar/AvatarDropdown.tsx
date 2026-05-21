@@ -37,7 +37,14 @@ export function AvatarDropdown({ profile, onSignOut }: Props) {
     router.refresh();
   }
 
-  const initials = profile?.full_name?.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+  const displayName = profile?.full_name?.trim() || profile?.email?.split('@')[0] || 'Account';
+  const initials = displayName
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <div className="relative" ref={ref}>
@@ -48,7 +55,7 @@ export function AvatarDropdown({ profile, onSignOut }: Props) {
       {open && (
         <div className="absolute right-0 top-10 w-56 bg-surface border border-border rounded-xl shadow-2xl shadow-black/50 py-1 z-50">
           <div className="px-4 py-3 border-b border-border">
-            <p className="text-text font-semibold text-sm truncate">{profile?.full_name}</p>
+            <p className="text-text font-semibold text-sm truncate">{displayName}</p>
             <p className="text-text3 text-xs truncate">{profile?.email}</p>
             <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full font-medium ${profile?.current_mode === 'builder' ? 'bg-brand/20 text-brand' : 'bg-blue/20 text-blue'}`}>
               {profile?.current_mode === 'builder' ? 'Builder' : 'Buyer'}

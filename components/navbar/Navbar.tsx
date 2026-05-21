@@ -73,7 +73,7 @@ export function Navbar() {
         </nav>
 
         <div className="ml-auto flex items-center gap-3">
-          {user ? (
+          {user && !isPublicHome ? (
             <>
               <Link href="/messages" className="relative inline-flex items-center justify-center rounded-2xl border border-[#1E1B3A] bg-[#100F1C] p-2 text-[#9490B5] transition hover:border-[#7C5CFC] hover:text-white">
                 <MessageSquare size={18} />
@@ -120,7 +120,7 @@ export function Navbar() {
                 {link.href === '/studio' && <span className="studio-new-badge">NEW</span>}
               </Link>
             ))}
-            {user ? (
+            {user && !isPublicHome ? (
               <>
                 <Link href="/messages" className="block rounded-2xl border border-[#1E1B3A] bg-[#100F1C] px-4 py-3 text-sm font-medium text-[#9490B5] transition hover:bg-[#1E1B3A] hover:text-white" onClick={() => setMobileOpen(false)}>
                   Messages
