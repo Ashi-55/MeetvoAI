@@ -33,7 +33,11 @@ export async function POST(request: Request) {
     const createData = await createResponse.json();
 
     if (!createResponse.ok || !createData.id) {
-      return NextResponse.json({ error: createData.message || createData.error || 'Failed to create user.' }, { status: 500 });
+      return NextResponse.json({
+        error: createData.message || createData.error || 'Failed to create user.',
+        stage: 'create-user',
+        status: createResponse.status,
+      }, { status: 500 });
     }
 
     const profileResponse = await fetch(`${supabaseUrl}/rest/v1/profiles?on_conflict=id`, {
@@ -59,12 +63,14 @@ export async function POST(request: Request) {
       console.error('Profile upsert failed:', profileError);
       return NextResponse.json({
         error: profileError?.message || 'Failed to create or update user profile. Ensure the profiles table exists in Supabase.',
+        stage: 'profile-upsert',
+        status: profileResponse.status,
       }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unable to create account.';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message, stage: 'unexpected' }, { status: 500 });
   }
 }
