@@ -162,7 +162,7 @@ function LandingPage() {
             ))}
           </div>
 
-          <div className="mt-0 w-full max-w-3xl overflow-hidden py-5">
+          <div className="relative left-1/2 mt-0 w-screen -translate-x-1/2 overflow-hidden py-5">
             <div className="marquee inline-flex min-w-max items-center whitespace-nowrap text-sm text-[#9490B5]">
               <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
               <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
