@@ -67,11 +67,6 @@ export async function POST(request: Request) {
     if (!profileResponse.ok) {
       const profileError = await profileResponse.json().catch(() => null);
       console.error('Profile upsert failed:', profileError);
-      return NextResponse.json({
-        error: profileError?.message || 'Failed to create or update user profile. Ensure the profiles table exists in Supabase.',
-        stage: 'profile-upsert',
-        status: profileResponse.status,
-      }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
