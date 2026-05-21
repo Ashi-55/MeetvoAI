@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
 
 function clean(value?: string) {
   return (value || '').trim().replace(/^["']|["']$/g, '');
@@ -13,7 +12,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Full name, email, and password are required.' }, { status: 400 });
     }
 
-    const service = createServiceClient();
     const supabaseUrl = clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
     const serviceKey = clean(process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
 
@@ -38,31 +36,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: createData.message || createData.error || 'Failed to create user.' }, { status: 500 });
     }
 
-    // Create profile for the user
-    // We omit current_mode so it will use the database default,
-    // then we update it to null in a separate step
-    const { error: profileCreateError } = await service.from('profiles').insert({
-      id: createData.id,
-      full_name,
-      email,
+    const profileResponse = await fetch(`${supabaseUrl}/rest/v1/profiles?on_conflict=id`, {
+      method: 'POST',
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify({
+        id: createData.id,
+        full_name,
+        email,
+        current_mode: null,
+        buyer_onboarding_complete: false,
+        builder_onboarding_complete: false,
+      }),
     });
 
-    if (profileCreateError) {
-      console.error('Profile insert failed:', profileCreateError);
-      // Don't fail here - profile might already exist from auth trigger
-    }
-
-    // Explicitly set current_mode to null for role selection on welcome page
-    const { error: profileError } = await service.from('profiles').update({
-      current_mode: null,
-      buyer_onboarding_complete: false,
-      builder_onboarding_complete: false,
-    }).eq('id', createData.id);
-
-    if (profileError) {
+    if (!profileResponse.ok) {
+      const profileError = await profileResponse.json().catch(() => null);
       console.error('Profile upsert failed:', profileError);
       return NextResponse.json({
-        error: profileError.message || 'Failed to create or update user profile. Ensure the profiles table exists in Supabase.',
+        error: profileError?.message || 'Failed to create or update user profile. Ensure the profiles table exists in Supabase.',
       }, { status: 500 });
     }
 
