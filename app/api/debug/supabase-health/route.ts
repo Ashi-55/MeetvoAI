@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createHash } from 'crypto';
 
 function clean(value?: string) {
   return (value || '').trim().replace(/^["']|["']$/g, '');
@@ -32,6 +33,11 @@ function getJwtRole(key: string) {
   } catch {
     return null;
   }
+}
+
+function fingerprint(key: string) {
+  if (!key) return null;
+  return createHash('sha256').update(key).digest('hex').slice(0, 12);
 }
 
 async function checkAdminAccess(key: string, url: string) {
@@ -71,6 +77,8 @@ export async function GET() {
     service: {
       ...service,
       role: getJwtRole(serviceKey),
+      length: serviceKey.length,
+      fingerprint: fingerprint(serviceKey),
       admin,
     },
   });
