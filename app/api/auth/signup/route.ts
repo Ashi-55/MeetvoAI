@@ -13,26 +13,28 @@ export async function POST(request: Request) {
     }
 
     const supabaseUrl = clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+    const anonKey = clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     const serviceKey = clean(process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-    const createResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+    const createResponse = await fetch(`${supabaseUrl}/auth/v1/signup`, {
       method: 'POST',
       headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         email,
         password,
-        user_metadata: { full_name },
-        email_confirm: true,
+        data: { full_name },
       }),
     });
 
     const createData = await createResponse.json();
 
-    if (!createResponse.ok || !createData.id) {
+    const userId = createData.user?.id || createData.id;
+
+    if (!createResponse.ok || !userId) {
       return NextResponse.json({
         error: createData.message || createData.error || 'Failed to create user.',
         stage: 'create-user',
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
         Prefer: 'resolution=merge-duplicates,return=minimal',
       },
       body: JSON.stringify({
-        id: createData.id,
+        id: userId,
         full_name,
         email,
         current_mode: null,
