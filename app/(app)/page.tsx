@@ -166,6 +166,8 @@ function LandingPage() {
             <div className="marquee inline-flex min-w-max items-center whitespace-nowrap text-sm text-[#9490B5]">
               <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
               <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
+              <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
+              <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
             </div>
           </div>
         </div>
