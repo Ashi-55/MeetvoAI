@@ -51,18 +51,18 @@ export default function SignupPage() {
       }
 
       const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
-      if (signInError) {
-        setError(signInError.message);
+      if (signInError || !signInData.session) {
+        setError(signInError?.message || 'Account created. Please sign in to continue.');
         setLoading(false);
         return;
       }
 
-      router.push('/welcome');
+      window.location.assign('/welcome');
     } catch (error) {
       setError('An unexpected error occurred.');
       setLoading(false);
