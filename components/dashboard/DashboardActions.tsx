@@ -48,14 +48,14 @@ export function DashboardActions() {
           height: 38px;
           align-items: center;
           justify-content: center;
-          border: 1px solid #1E1B3A;
+          border: 1px solid #1B2540;
           border-radius: 15px;
-          background: #100F1C;
-          color: #9490B5;
+          background: #131A2A;
+          color: #A8B3CF;
           transition: border-color .15s ease, color .15s ease, background .15s ease;
         }
         .dashboard-action-btn:hover {
-          border-color: #7C5CFC;
+          border-color: #5B5EF7;
           color: #fff;
           background: #141225;
         }
@@ -66,7 +66,7 @@ export function DashboardActions() {
           min-width: 18px;
           height: 18px;
           border-radius: 999px;
-          background: #E53E3E;
+          background: #EF4444;
           color: white;
           font-size: 10px;
           font-weight: 800;

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import { ChatManager } from '@/components/chat/ChatManager';
 import { GlobalBackButton } from '@/components/GlobalBackButton';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'MeetvoAI',
@@ -20,12 +21,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen w-full overflow-x-hidden bg-page text-white">
-        <GlobalBackButton />
-        {children}
-        <ChatManager />
-        <Toaster />
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen w-full overflow-x-hidden bg-page text-text">
+        <ThemeProvider>
+          <GlobalBackButton />
+          {children}
+          <ChatManager />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

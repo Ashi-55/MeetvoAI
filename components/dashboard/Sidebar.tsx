@@ -57,11 +57,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const sectionLabelColor =
-    role === 'builder' ? 'text-purple-400' : 'text-blue-400';
+    role === 'builder' ? 'text-[#5B5EF7]' : 'text-[#00C2A8]';
 
-  const accentColor = role === 'builder' ? '#7C5CBF' : '#ae9bc9';
-  const accentBgLight = role === 'builder' ? '#7C5CBF15' : '#ae9bc915';
-  const accentBorderLight = role === 'builder' ? '#7C5CBF40' : '#ae9bc940';
+  const accentColor = role === 'builder' ? '#5B5EF7' : '#00C2A8';
+  const accentBgLight = role === 'builder' ? '#5B5EF715' : '#00C2A815';
+  const accentBorderLight = role === 'builder' ? '#5B5EF740' : '#00C2A840';
   const userInitial = userName && userName.length > 0 ? userName[0].toUpperCase() : 'U';
 
   const handleUpgradeClick = () => {
@@ -73,8 +73,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       style={{
         width: '240px',
         flexShrink: 0,
-        background: '#0D0B1A',
-        borderRight: '1px solid #1E1B3A',
+        background: '#111827',
+        borderRight: '1px solid #1B2540',
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div
         style={{
           padding: '20px 16px',
-          borderBottom: '1px solid #1E1B3A',
+          borderBottom: '1px solid #1B2540',
         }}
       >
         {/* Logo Row */}
@@ -98,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <div style={{ fontSize: '22px', fontWeight: 900, letterSpacing: '-0.04em' }}>
             <span style={{ color: 'white' }}>Meetvo</span>
-            <span style={{ color: '#ae9bc9' }}>AI</span>
+            <span style={{ color: '#00C2A8' }}>AI</span>
           </div>
         </div>
 
@@ -116,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             style={{
               width: '36px',
               height: '36px',
-              background: 'linear-gradient(135deg, #ae9bc9, #7C5CBF)',
+              background: 'linear-gradient(135deg, #00C2A8, #5B5EF7)',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
@@ -139,7 +139,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               style={{
                 marginTop: '4px',
                 background:
-                  role === 'business' ? '#ae9bc920' : '#7C5CBF20',
+                  role === 'business' ? '#00C2A820' : '#5B5EF720',
                 color: accentColor,
                 borderRadius: '100px',
                 padding: '2px 8px',
@@ -355,13 +355,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* BOTTOM SECTION */}
       <div
         style={{
-          borderTop: '1px solid #1E1B3A',
+          borderTop: '1px solid #1B2540',
           padding: '16px',
         }}
       >
         <div
           style={{
-            color: '#8A9BB5',
+            color: '#A8B3CF',
             fontSize: '12px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

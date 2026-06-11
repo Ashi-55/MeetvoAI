@@ -46,14 +46,14 @@ export default function BuyerProfilePage() {
 
   if (loading || isLoading) {
     return (
-      <main className="min-h-screen bg-[#08080F] px-4 py-8 text-white">
+      <main className="min-h-screen bg-[#0B1020] px-4 py-8 text-white">
         <div className="mx-auto max-w-5xl space-y-6 animate-pulse">
-          <div className="h-20 rounded-[28px] bg-[#100F1C]" />
+          <div className="h-20 rounded-[28px] bg-[#131A2A]" />
           <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-            <div className="h-[420px] rounded-[28px] bg-[#100F1C]" />
+            <div className="h-[420px] rounded-[28px] bg-[#131A2A]" />
             <div className="space-y-4">
-              <div className="h-12 rounded-[20px] bg-[#100F1C]" />
-              <div className="h-80 rounded-[20px] bg-[#100F1C]" />
+              <div className="h-12 rounded-[20px] bg-[#131A2A]" />
+              <div className="h-80 rounded-[20px] bg-[#131A2A]" />
             </div>
           </div>
         </div>
@@ -63,13 +63,13 @@ export default function BuyerProfilePage() {
 
   if (!profile || !buyerProfile) {
     return (
-      <main className="min-h-screen bg-[#08080F] px-4 py-8 text-white">
-        <div className="mx-auto max-w-3xl rounded-[28px] border border-[#1E1B3A] bg-[#100F1C] p-10 text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Business Profile</p>
+      <main className="min-h-screen bg-[#0B1020] px-4 py-8 text-white">
+        <div className="mx-auto max-w-3xl rounded-[28px] border border-[#1B2540] bg-[#131A2A] p-10 text-center">
+          <p className="text-sm uppercase tracking-[0.3em] text-[#A8B3CF]">Business Profile</p>
           <h1 className="mt-4 text-3xl font-semibold">Business not found</h1>
-          <p className="mt-3 text-sm text-[#9490B5]">This business profile may have been removed or the link is incorrect.</p>
+          <p className="mt-3 text-sm text-[#A8B3CF]">This business profile may have been removed or the link is incorrect.</p>
           <div className="mt-8 flex justify-center">
-            <Link href="/marketplace" className="rounded-full bg-[#ae9bc9] px-6 py-3 text-sm font-semibold text-[#08080F] transition hover:bg-[#00B4D8]">
+            <Link href="/marketplace" className="rounded-full bg-[#00C2A8] px-6 py-3 text-sm font-semibold text-[#0B1020] transition hover:bg-[#00B4D8]">
               Back to Marketplace
             </Link>
           </div>
@@ -84,37 +84,37 @@ export default function BuyerProfilePage() {
   const location = buyerProfile.location || 'Remote / India';
   const budget = buyerProfile.budget_range || 'Flexible budget';
   const needs = buyerProfile.needs ?? [];
-  const description = buyerProfile.description || 'This business is looking for trusted builders to solve their automation needs.';
+  const description = buyerProfile.description || 'This business is looking to connect with builders who can solve their automation needs.';
 
   return (
-    <main className="min-h-screen bg-[#08080F] px-4 py-8 text-white">
+    <main className="min-h-screen bg-[#0B1020] px-4 py-8 text-white">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <button
             type="button"
             onClick={() => router.back()}
-            className="inline-flex items-center gap-2 rounded-full border border-[#1E1B3A] bg-[#100F1C] px-4 py-2 text-sm font-semibold text-white transition hover:border-[#ae9bc9] hover:text-[#ae9bc9]"
+            className="inline-flex items-center gap-2 rounded-full border border-[#1B2540] bg-[#131A2A] px-4 py-2 text-sm font-semibold text-white transition hover:border-[#00C2A8] hover:text-[#00C2A8]"
           >
             <ArrowLeft size={16} /> Back
           </button>
-          <Link href="/marketplace" className="text-sm text-[#9490B5] transition hover:text-white">
+          <Link href="/marketplace" className="text-sm text-[#A8B3CF] transition hover:text-white">
             Browse more businesses
           </Link>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
-          <div className="rounded-[28px] border border-[#1E1B3A] bg-[#100F1C] p-8">
+          <div className="rounded-[28px] border border-[#1B2540] bg-[#131A2A] p-8">
             <div className="mb-6 flex items-center gap-4">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#ae9bc9] text-4xl font-bold text-[#08080F]">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#00C2A8] text-4xl font-bold text-[#0B1020]">
                 {initials}
               </div>
               <div>
-                <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Business Profile</p>
+                <p className="text-sm uppercase tracking-[0.3em] text-[#A8B3CF]">Business Profile</p>
                 <h1 className="mt-2 text-3xl font-semibold text-white">{businessName}</h1>
               </div>
             </div>
 
-            <div className="space-y-4 text-sm text-[#9490B5]">
+            <div className="space-y-4 text-sm text-[#A8B3CF]">
               <div className="flex items-center gap-2">
                 <Briefcase size={16} />
                 <span>{industry}</span>
@@ -126,33 +126,33 @@ export default function BuyerProfilePage() {
               {buyerProfile.website && (
                 <div className="flex items-center gap-2">
                   <Globe size={16} />
-                  <Link href={buyerProfile.website} target="_blank" rel="noreferrer" className="text-[#ae9bc9] transition hover:text-[#7ADECD]">
+                  <Link href={buyerProfile.website} target="_blank" rel="noreferrer" className="text-[#00C2A8] transition hover:text-[#7ADECD]">
                     {buyerProfile.website}
                     <ExternalLink size={14} className="ml-1 inline-block" />
                   </Link>
                 </div>
               )}
               <div className="flex items-center gap-2">
-                <span className="text-[#9490B5]">Budget range:</span>
+                <span className="text-[#A8B3CF]">Budget range:</span>
                 <span className="text-white">{budget}</span>
               </div>
             </div>
 
-            <div className="mt-8 rounded-[24px] bg-[#0B1628] p-6">
+            <div className="mt-8 rounded-[24px] bg-[#111827] p-6">
               <h2 className="text-lg font-semibold text-white">Need summary</h2>
               <p className="mt-3 text-sm leading-7 text-[#D1D5DB]">{description}</p>
             </div>
 
-            <div className="mt-6 rounded-[24px] border border-[#1E1B3A] bg-[#0B1628] p-6">
+            <div className="mt-6 rounded-[24px] border border-[#1B2540] bg-[#111827] p-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Approach business</p>
+                  <p className="text-sm uppercase tracking-[0.3em] text-[#A8B3CF]">Approach business</p>
                   <p className="mt-2 text-sm text-[#D1D5DB]">Start a conversation with the buyer and propose your services.</p>
                 </div>
                 <button
                   type="button"
                   onClick={handleMessage}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#ae9bc9] px-5 py-3 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA]"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#00C2A8] px-5 py-3 text-sm font-semibold text-[#0B1020] transition hover:bg-[#4B4EE8]"
                 >
                   <MessageSquare size={16} /> Message business
                 </button>
@@ -161,24 +161,24 @@ export default function BuyerProfilePage() {
           </div>
 
           <div className="space-y-6">
-            <section className="rounded-[28px] border border-[#1E1B3A] bg-[#100F1C] p-8">
+            <section className="rounded-[28px] border border-[#1B2540] bg-[#131A2A] p-8">
               <h2 className="text-xl font-semibold text-white">Business requirements</h2>
-              <p className="mt-3 text-sm text-[#9490B5]">These are the key areas the buyer is looking to solve.</p>
+              <p className="mt-3 text-sm text-[#A8B3CF]">These are the key areas the buyer is looking to solve.</p>
               <div className="mt-6 grid gap-3">
                 {needs.length > 0 ? (
                   needs.map((need, idx) => (
-                    <div key={idx} className="rounded-2xl border border-[#1E1B3A] bg-[#0A172C] px-4 py-3 text-sm text-[#D1D5DB]">
+                    <div key={idx} className="rounded-2xl border border-[#1B2540] bg-[#111827] px-4 py-3 text-sm text-[#D1D5DB]">
                       {need}
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-[#9490B5]">No specific needs listed yet.</p>
+                  <p className="text-sm text-[#A8B3CF]">No specific needs listed yet.</p>
                 )}
               </div>
             </section>
 
             {buyerProfile.description && (
-              <section className="rounded-[28px] border border-[#1E1B3A] bg-[#100F1C] p-8">
+              <section className="rounded-[28px] border border-[#1B2540] bg-[#131A2A] p-8">
                 <h2 className="text-xl font-semibold text-white">About the project</h2>
                 <p className="mt-3 text-sm leading-7 text-[#D1D5DB]">{buyerProfile.description}</p>
               </section>

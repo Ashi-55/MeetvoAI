@@ -1,13 +1,13 @@
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#08080F] px-4 text-white">
-      <section className="w-full max-w-md rounded-2xl border border-[#1E1B3A] bg-[#100F1C] p-6 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#ae9bc9]">404</p>
+    <main className="flex min-h-screen items-center justify-center bg-[#0B1020] px-4 text-white">
+      <section className="w-full max-w-md rounded-2xl border border-[#1B2540] bg-[#131A2A] p-6 text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#00C2A8]">404</p>
         <h1 className="mt-3 text-2xl font-extrabold">Page not found</h1>
-        <p className="mt-3 text-sm text-[#9490B5]">This page does not exist or has moved.</p>
+        <p className="mt-3 text-sm text-[#A8B3CF]">This page does not exist or has moved.</p>
         <a
           href="/dashboard"
-          className="mt-6 inline-flex rounded-xl bg-[#ae9bc9] px-4 py-2 text-sm font-bold text-[#08080F]"
+          className="mt-6 inline-flex rounded-xl bg-[#00C2A8] px-4 py-2 text-sm font-bold text-[#0B1020]"
         >
           Back to Dashboard
         </a>

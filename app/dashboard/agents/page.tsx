@@ -27,17 +27,17 @@ export default function DashboardAgentsPage() {
   return (
     <main className="min-h-screen bg-page px-6 py-12 text-white">
       <div className="mx-auto max-w-6xl space-y-6">
-        <section className="rounded-3xl border border-[#1E1B3A] bg-[#090C16] p-8">
+        <section className="rounded-3xl border border-[#1B2540] bg-[#111827] p-8">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-3xl font-bold">My Agents</h1>
-              <p className="mt-2 text-sm text-[#8A9BB5] max-w-2xl">Manage your deployed agents and preview agent usage.</p>
+              <p className="mt-2 text-sm text-[#A8B3CF] max-w-2xl">Manage your deployed agents and preview agent usage.</p>
             </div>
             <div className="flex gap-3">
               <Link href="/studio" className="rounded-2xl bg-[#7C5CFF] px-5 py-3 text-sm font-semibold text-white">
                 Open Studio
               </Link>
-              <Link href="/dashboard" className="rounded-2xl border border-[#4F8EF7] px-5 py-3 text-sm font-semibold text-white">
+              <Link href="/dashboard" className="rounded-2xl border border-[#5B5EF7] px-5 py-3 text-sm font-semibold text-white">
                 Dashboard
               </Link>
             </div>
@@ -52,9 +52,9 @@ export default function DashboardAgentsPage() {
             ) : agents.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-[#3B4A7F] bg-[#080B17] p-8 text-center">
                 <p className="text-lg font-semibold">No agents yet</p>
-                <p className="mt-2 text-sm text-[#8A9BB5]">Create new AI agents in the studio to automate workflows.</p>
+                <p className="mt-2 text-sm text-[#A8B3CF]">Create new AI agents in the studio to automate workflows.</p>
                 <div className="mt-4">
-                  <Link href="/studio" className="rounded-2xl bg-[#4F8EF7] px-4 py-2 font-semibold">Create Agent</Link>
+                  <Link href="/studio" className="rounded-2xl bg-[#5B5EF7] px-4 py-2 font-semibold">Create Agent</Link>
                 </div>
               </div>
             ) : (
@@ -62,7 +62,7 @@ export default function DashboardAgentsPage() {
                 {agents.map((a) => (
                   <li key={a.id} className="flex items-center justify-between rounded-2xl border border-[#1A1F2B] bg-[#0C1220] p-3">
                     <div className="font-medium">{a.name}</div>
-                    <div className="text-sm text-[#8A9BB5]">{a.status}</div>
+                    <div className="text-sm text-[#A8B3CF]">{a.status}</div>
                   </li>
                 ))}
               </ul>

@@ -17,7 +17,7 @@ export function Ticker({ items, className }: TickerProps) {
 
   return (
     <div
-      className={cn('w-full overflow-hidden rounded-lg bg-[#08080F]', className)}
+      className={cn('w-full overflow-hidden rounded-lg bg-[#0B1020]', className)}
       aria-label="ticker"
     >
       <div

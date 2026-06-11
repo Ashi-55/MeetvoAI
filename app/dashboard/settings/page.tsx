@@ -26,14 +26,14 @@ export default function DashboardSettingsPage() {
   return (
     <main className="min-h-screen bg-page px-6 py-12 text-white">
       <div className="mx-auto max-w-6xl space-y-6">
-        <section className="rounded-3xl border border-[#1E1B3A] bg-[#090C16] p-8">
+        <section className="rounded-3xl border border-[#1B2540] bg-[#111827] p-8">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-3xl font-bold">Settings</h1>
-              <p className="mt-2 text-sm text-[#8A9BB5]">Update account details, billing preferences, and connected integrations.</p>
+              <p className="mt-2 text-sm text-[#A8B3CF]">Update account details, billing preferences, and connected integrations.</p>
             </div>
             <div className="flex gap-3">
-              <Link href="/dashboard" className="rounded-2xl bg-[#4F8EF7] px-5 py-3 text-sm font-semibold text-[#08080F]">Dashboard</Link>
+              <Link href="/dashboard" className="rounded-2xl bg-[#5B5EF7] px-5 py-3 text-sm font-semibold text-[#0B1020]">Dashboard</Link>
             </div>
           </div>
 
@@ -44,12 +44,12 @@ export default function DashboardSettingsPage() {
               </div>
             ) : (
               <div className="rounded-2xl border border-[#1A1F2B] bg-[#0C1220] p-6">
-                <div className="text-sm text-[#8A9BB5]">Account</div>
+                <div className="text-sm text-[#A8B3CF]">Account</div>
                 <div className="mt-3 font-semibold text-white">{profile?.full_name || 'Unknown'}</div>
-                <div className="mt-1 text-xs text-[#8A9BB5]">{profile?.email || ''}</div>
+                <div className="mt-1 text-xs text-[#A8B3CF]">{profile?.email || ''}</div>
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  <Link href="/settings" className="rounded-2xl border border-[#4F8EF7] px-4 py-2 text-sm font-semibold text-white">Edit Profile</Link>
-                  <Link href="/pricing" className="rounded-2xl bg-[#4F8EF7] px-4 py-2 text-sm font-semibold text-[#08080F]">Manage Subscription</Link>
+                  <Link href="/settings" className="rounded-2xl border border-[#5B5EF7] px-4 py-2 text-sm font-semibold text-white">Edit Profile</Link>
+                  <Link href="/pricing" className="rounded-2xl bg-[#5B5EF7] px-4 py-2 text-sm font-semibold text-[#0B1020]">Manage Subscription</Link>
                 </div>
               </div>
             )}

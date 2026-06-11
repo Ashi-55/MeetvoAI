@@ -21,10 +21,10 @@ type DiagramConnection = {
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  trigger: '#ae9bc9',
-  ai_process: '#ae9bc9',
-  action: '#7C5CBF',
-  output: '#68D391',
+  trigger: '#F59E0B',
+  ai_process: '#F59E0B',
+  action: '#5B5EF7',
+  output: '#22C55E',
 };
 
 function nodeMeta(type: NodeType) {
@@ -138,7 +138,7 @@ export function WorkflowDiagram({
               orient="auto"
               markerUnits="strokeWidth"
             >
-              <path d="M0,0 L0,12 L12,6 z" fill="#1E1B3A" />
+              <path d="M0,0 L0,12 L12,6 z" fill="#1B2540" />
             </marker>
           </defs>
 
@@ -162,7 +162,7 @@ export function WorkflowDiagram({
                 key={`${c.from}-${c.to}-${idx}`}
                 d={d}
                 fill="none"
-                stroke="#1E1B3A"
+                stroke="#1B2540"
                 strokeWidth={2}
                 markerEnd="url(#wf-arrow)"
                 opacity={activeNodeId && (activeNodeId === c.from || activeNodeId === c.to) ? 1 : 0.85}
@@ -239,7 +239,7 @@ export function WorkflowDiagram({
       </div>
 
       {activeNode ? (
-        <div className="mt-4 rounded-xl border border-border bg-surface2/30 p-4">
+        <div className="mt-4 rounded-xl border border-border bg-surface2 p-4">
           <div className="text-sm font-semibold text-text2">Node detail</div>
           <div className="mt-1 text-xs text-text3">
             <span className="font-bold text-text2">{String(activeNode.type).toUpperCase()}</span> · {activeNode.name ?? activeNode.content ?? activeNode.id}

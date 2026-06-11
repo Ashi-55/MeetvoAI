@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import { MeetvoLogo } from '@/components/ui/HandshakeLogo';
 import { createClient } from '@/lib/supabase/client';
+import { getAuthRedirectUrl } from '@/lib/auth-redirect';
 
 const schema = z.object({
   email: z.string().email('Valid email required'),
@@ -50,7 +51,7 @@ export default function LoginPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${next}` },
+      options: { redirectTo: getAuthRedirectUrl(next) },
     });
   }
 

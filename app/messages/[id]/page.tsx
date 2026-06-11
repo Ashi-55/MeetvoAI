@@ -294,25 +294,25 @@ export default function MessagesChatPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#08080F] px-4 py-6 text-white">
-        <div className="max-w-3xl mx-auto rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-6">Loading chat...</div>
+      <div className="min-h-screen bg-[#0B1020] px-4 py-6 text-white">
+        <div className="max-w-3xl mx-auto rounded-3xl border border-[#1B2540] bg-[#131A2A] p-6">Loading chat...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#08080F] text-white">
+    <div className="min-h-screen bg-[#0B1020] text-white">
       <div className="mx-auto max-w-[1500px] px-4 py-6">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="flex flex-col rounded-3xl border border-[#1E1B3A] bg-[#100F1C] overflow-hidden">
-            <div className="border-b border-[#1E1B3A] px-6 py-5">
-              <p className="text-sm text-[#9490B5]">Chat with</p>
+          <div className="flex flex-col rounded-3xl border border-[#1B2540] bg-[#131A2A] overflow-hidden">
+            <div className="border-b border-[#1B2540] px-6 py-5">
+              <p className="text-sm text-[#A8B3CF]">Chat with</p>
               <h1 className="text-2xl font-semibold text-white">{targetName}</h1>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
               {messages.length === 0 ? (
-                <div className="rounded-3xl border border-dashed border-[#1E1B3A] p-10 text-center text-sm text-[#9490B5]">
+                <div className="rounded-3xl border border-dashed border-[#1B2540] p-10 text-center text-sm text-[#A8B3CF]">
                   No messages yet. Use the deal panel to create a proposal or send a quick message.
                 </div>
               ) : (
@@ -331,9 +331,9 @@ export default function MessagesChatPage() {
 
                   return (
                     <div key={message.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] rounded-3xl px-4 py-3 ${isMine ? 'bg-[#ae9bc9] text-[#08080F]' : 'bg-[#100F1C] border border-[#1E1B3A] text-white'}`}>
+                      <div className={`max-w-[80%] rounded-3xl px-4 py-3 ${isMine ? 'bg-[#00C2A8] text-[#0B1020]' : 'bg-[#131A2A] border border-[#1B2540] text-white'}`}>
                         <p className="whitespace-pre-wrap text-sm">{message.content}</p>
-                        <p className="mt-2 text-[11px] text-[#9490B5]">{formatTime(message.created_at ?? '')}</p>
+                        <p className="mt-2 text-[11px] text-[#A8B3CF]">{formatTime(message.created_at ?? '')}</p>
                       </div>
                     </div>
                   );
@@ -342,7 +342,7 @@ export default function MessagesChatPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="border-t border-[#1E1B3A] bg-[#0A172C] px-6 py-4">
+            <div className="border-t border-[#1B2540] bg-[#111827] px-6 py-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <textarea
                   value={input}
@@ -355,12 +355,12 @@ export default function MessagesChatPage() {
                   }}
                   rows={1}
                   placeholder="Type a message..."
-                  className="min-h-[56px] flex-1 resize-none rounded-3xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                  className="min-h-[56px] flex-1 resize-none rounded-3xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim() || sending}
-                  className="inline-flex h-14 items-center justify-center rounded-3xl bg-[#ae9bc9] px-5 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA] disabled:opacity-50"
+                  className="inline-flex h-14 items-center justify-center rounded-3xl bg-[#00C2A8] px-5 text-sm font-semibold text-[#0B1020] transition hover:bg-[#4B4EE8] disabled:opacity-50"
                 >
                   {sending ? 'Sending...' : 'Send'}
                 </button>
@@ -368,13 +368,13 @@ export default function MessagesChatPage() {
             </div>
           </div>
 
-          <aside className="rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-6">
+          <aside className="rounded-3xl border border-[#1B2540] bg-[#131A2A] p-6">
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-white">Project Deal</h2>
-                <p className="mt-1 text-sm text-[#9490B5]">Escrow workflow and proposal details</p>
+                <p className="mt-1 text-sm text-[#A8B3CF]">Escrow workflow and proposal details</p>
               </div>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${dealStatus === 'in_escrow' ? 'bg-[rgba(174, 155, 201, 0.15)] text-[#ae9bc9]' : 'bg-[#1E1B3A] text-[#9490B5]'}`}>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${dealStatus === 'in_escrow' ? 'bg-[rgba(0, 194, 168, 0.15)] text-[#00C2A8]' : 'bg-[#1B2540] text-[#A8B3CF]'}`}>
                 {statusLabel}
               </span>
             </div>
@@ -387,7 +387,7 @@ export default function MessagesChatPage() {
                     value={proposalTitle}
                     onChange={(event) => setProposalTitle(event.target.value)}
                     placeholder="Project title"
-                    className="mt-2 w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                    className="mt-2 w-full rounded-2xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                   />
                 </div>
                 <div>
@@ -397,7 +397,7 @@ export default function MessagesChatPage() {
                     onChange={(event) => setProposalPrice(event.target.value)}
                     type="number"
                     placeholder="Enter amount"
-                    className="mt-2 w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                    className="mt-2 w-full rounded-2xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                   />
                 </div>
                 <div>
@@ -405,7 +405,7 @@ export default function MessagesChatPage() {
                   <select
                     value={proposalTimeline}
                     onChange={(event) => setProposalTimeline(event.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                    className="mt-2 w-full rounded-2xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                   >
                     {timelineOptions.map((option) => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -419,23 +419,23 @@ export default function MessagesChatPage() {
                     onChange={(event) => setProposalScope(event.target.value)}
                     rows={4}
                     placeholder="What will be delivered"
-                    className="mt-2 w-full resize-none rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                    className="mt-2 w-full resize-none rounded-2xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                   />
                 </div>
                 <button
                   onClick={handleSendProposal}
                   disabled={proposalSending}
-                  className="w-full rounded-3xl bg-[#A855F7] px-4 py-4 text-sm font-semibold text-white transition disabled:opacity-50"
+                  className="w-full rounded-3xl bg-[#5B5EF7] px-4 py-4 text-sm font-semibold text-white transition disabled:opacity-50"
                 >
                   {proposalSending ? 'Sending proposal...' : 'Send Proposal'}
                 </button>
               </div>
             ) : latestOffer ? (
               <div className="space-y-4">
-                <div className="rounded-3xl border border-[#1E1B3A] bg-[#08080F] p-4">
+                <div className="rounded-3xl border border-[#1B2540] bg-[#0B1020] p-4">
                   <p className="text-sm font-semibold text-white">Project</p>
                   <p className="mt-2 text-base font-semibold text-white">{latestOffer.title || 'Custom project'}</p>
-                  <div className="mt-4 space-y-3 text-sm text-[#9490B5]">
+                  <div className="mt-4 space-y-3 text-sm text-[#A8B3CF]">
                     <div className="flex justify-between">
                       <span>Price</span>
                       <span className="font-semibold text-white">₹{latestOffer.price?.toLocaleString('en-IN')}</span>
@@ -451,9 +451,9 @@ export default function MessagesChatPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl bg-[rgba(174, 155, 201, 0.15)] border border-[#ae9bc9] p-3 text-[#ae9bc9] text-sm">
+                <div className="rounded-2xl bg-[rgba(0, 194, 168, 0.15)] border border-[#00C2A8] p-3 text-[#00C2A8] text-sm">
                   <p className="font-semibold">🔒 Escrow Protected</p>
-                  <p className="mt-2 text-[#9490B5] text-xs">Payment will be held securely. Released to builder only after you approve the delivered work.</p>
+                  <p className="mt-2 text-[#A8B3CF] text-xs">Payment will be held securely. Released to builder only after you approve the delivered work.</p>
                 </div>
 
                 {latestOffer.status === 'pending' ? (
@@ -461,28 +461,28 @@ export default function MessagesChatPage() {
                     <button
                       onClick={handleAcceptProposal}
                       disabled={proposalSending}
-                      className="w-full rounded-3xl bg-[#ae9bc9] px-4 py-3 text-sm font-semibold text-[#08080F] transition disabled:opacity-50"
+                      className="w-full rounded-3xl bg-[#00C2A8] px-4 py-3 text-sm font-semibold text-[#0B1020] transition disabled:opacity-50"
                     >
                       {proposalSending ? 'Processing...' : '✓ Accept & Pay to Escrow'}
                     </button>
                     <button
                       onClick={handleDeclineProposal}
-                      className="w-full rounded-3xl border border-[#1E1B3A] bg-transparent px-4 py-3 text-sm font-semibold text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white"
+                      className="w-full rounded-3xl border border-[#1B2540] bg-transparent px-4 py-3 text-sm font-semibold text-[#A8B3CF] transition hover:border-[#00C2A8] hover:text-white"
                     >
                       ✗ Decline
                     </button>
                   </div>
                 ) : latestOffer.status === 'accepted' ? (
                   <div className="space-y-4">
-                    <div className="rounded-3xl border border-[#1E1B3A] bg-[#08080F] p-4 text-sm text-[#9490B5]">
-                      <p className="font-semibold text-[#ae9bc9]">🔒 In Escrow</p>
+                    <div className="rounded-3xl border border-[#1B2540] bg-[#0B1020] p-4 text-sm text-[#A8B3CF]">
+                      <p className="font-semibold text-[#00C2A8]">🔒 In Escrow</p>
                       <p className="mt-3 text-base font-semibold text-white">₹{latestOffer.price?.toLocaleString('en-IN')} is held securely</p>
-                      <p className="mt-2 text-[#9490B5] text-xs">Release payment when work is delivered and approved.</p>
+                      <p className="mt-2 text-[#A8B3CF] text-xs">Release payment when work is delivered and approved.</p>
                     </div>
                     <button
                       onClick={handleReleasePayment}
                       disabled={releaseLoading}
-                      className="w-full rounded-3xl bg-[#ae9bc9] px-4 py-3 text-sm font-semibold text-[#08080F] transition disabled:opacity-50"
+                      className="w-full rounded-3xl bg-[#00C2A8] px-4 py-3 text-sm font-semibold text-[#0B1020] transition disabled:opacity-50"
                     >
                       {releaseLoading ? 'Releasing...' : '✓ Approve & Release Payment'}
                     </button>
@@ -492,16 +492,16 @@ export default function MessagesChatPage() {
                     >
                       Report Issue
                     </button>
-                    {issueReported && <p className="text-xs text-[#9490B5]">Issue reported. Support will follow up shortly.</p>}
+                    {issueReported && <p className="text-xs text-[#A8B3CF]">Issue reported. Support will follow up shortly.</p>}
                   </div>
                 ) : (
-                  <div className="rounded-3xl border border-[#1E1B3A] bg-[#08080F] p-4 text-sm text-[#9490B5]">
+                  <div className="rounded-3xl border border-[#1B2540] bg-[#0B1020] p-4 text-sm text-[#A8B3CF]">
                     This proposal was declined. Ask the builder to submit a new offer or continue the chat.
                   </div>
                 )}
               </div>
             ) : (
-              <div className="rounded-3xl border border-[#1E1B3A] bg-[#08080F] p-4 text-sm text-[#9490B5]">
+              <div className="rounded-3xl border border-[#1B2540] bg-[#0B1020] p-4 text-sm text-[#A8B3CF]">
                 Waiting for a proposal from the builder. Send a quick message to get negotiations started.
               </div>
             )}

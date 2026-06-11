@@ -125,7 +125,7 @@ export function FilterBar({
   return (
     <aside className={className ?? ''}>
       <div className="w-[260px] max-w-full">
-        <div className="rounded-2xl border border-border bg-surface2/40 p-4">
+        <div className="rounded-2xl border border-border bg-surface2 p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="font-semibold text-text">Filters</div>
             {hasActive ? (

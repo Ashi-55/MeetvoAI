@@ -48,7 +48,7 @@ function generateWebsiteHTML(cfg: WebsiteConfig) {
   <style>
     :root{--primary:${primary};}
     *{box-sizing:border-box}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#08080F;color:#fff}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0B1020;color:#fff}
     .container{max-width:1100px;margin:0 auto;padding:0 20px}
     .nav{position:sticky;top:0;background:rgba(10,15,30,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
     .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:12px}
@@ -165,7 +165,7 @@ export function WebsitePreview({ config }: { config: {
           <div className="mt-4 flex items-center gap-2 flex-wrap">
             <Button
               variant="outline"
-              className="border-teal-500/40 text-teal-200"
+              className="border-amber-500/40 text-amber-200"
               onClick={async () => {
                 await navigator.clipboard.writeText(html);
                 // keep it simple; studio page can toast if desired

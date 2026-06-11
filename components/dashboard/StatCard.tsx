@@ -28,7 +28,7 @@ const StatCard: React.FC<StatCardProps> = ({
         {/* Label */}
         <div
           style={{
-            color: '#8A9BB5',
+            color: '#A8B3CF',
             fontSize: '13px',
             fontWeight: 500,
           }}
@@ -75,7 +75,7 @@ const StatCard: React.FC<StatCardProps> = ({
             alignItems: 'center',
             gap: '4px',
             fontSize: '12px',
-            color: trendPositive ? '#68D391' : '#8A9BB5',
+            color: trendPositive ? '#22C55E' : '#A8B3CF',
           }}
         >
           {trend}

@@ -46,7 +46,7 @@ export function GlobalBackButton() {
           router.push('/');
         }
       }}
-      className="fixed top-5 left-5 z-50 inline-flex items-center gap-2 rounded-full border border-[#1E1B3A] bg-[#100F1C] px-3 py-2 text-sm font-medium text-white shadow-lg shadow-black/30 transition hover:border-[#ae9bc9] hover:bg-[#0E1624] focus:outline-none focus:ring-2 focus:ring-[#ae9bc9]/40"
+      className="fixed top-5 left-5 z-50 inline-flex items-center gap-2 rounded-full border border-[#1B2540] bg-[#131A2A] px-3 py-2 text-sm font-medium text-white shadow-lg shadow-black/30 transition hover:border-[#00C2A8] hover:bg-[#111827] focus:outline-none focus:ring-2 focus:ring-[#00C2A8]/40"
     >
       <ArrowLeft size={16} />
       Back

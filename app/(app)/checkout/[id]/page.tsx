@@ -17,6 +17,12 @@ declare global {
   }
 }
 
+type RazorpayPaymentResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
 const schema = z.object({
   requirements: z.string().min(10, 'Describe your requirements (min 10 chars)'),
 });
@@ -30,6 +36,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) });
 
@@ -49,6 +56,7 @@ export default function CheckoutPage() {
   async function onSubmit(data: FormData) {
     if (!order || !user || !profile) return;
     setPaying(true);
+    setPaymentError('');
     try {
       const amount = order.total_amount ?? 0;
       const res = await fetch('/api/orders/create-razorpay', {
@@ -56,34 +64,55 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId: id, amount, requirements: data.requirements }),
       });
-      const { razorpayOrderId, key } = await res.json();
+      const paymentOrder = await res.json() as { razorpayOrderId?: string; key?: string; error?: string };
+
+      if (!res.ok || !paymentOrder.razorpayOrderId || !paymentOrder.key) {
+        throw new Error(paymentOrder.error || 'Unable to start payment');
+      }
+
+      if (!window.Razorpay) {
+        throw new Error('Razorpay checkout did not load. Please refresh and try again.');
+      }
 
       const rzp = new window.Razorpay({
-        key,
+        key: paymentOrder.key,
         amount: Math.round(amount * 100),
         currency: 'INR',
         name: 'MeetvoAI',
         description: order.title,
-        order_id: razorpayOrderId,
+        order_id: paymentOrder.razorpayOrderId,
         prefill: {
           name: profile.full_name,
           email: profile.email,
         },
         theme: { color: '#6C3AFF' },
-        handler: async (response: Record<string, string>) => {
-          await fetch(`/api/orders/${id}/payment-confirm`, {
+        handler: async (response: RazorpayPaymentResponse) => {
+          const confirmRes = await fetch(`/api/orders/${id}/payment-confirm`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ razorpay_payment_id: response.razorpay_payment_id, razorpay_order_id: response.razorpay_order_id }),
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
           });
+
+          if (!confirmRes.ok) {
+            const confirmData = await confirmRes.json().catch(() => null) as { error?: string } | null;
+            setPaying(false);
+            setPaymentError(confirmData?.error || 'Payment verification failed. Please contact support.');
+            return;
+          }
+
           setSuccess(true);
           setTimeout(() => router.push('/orders'), 2000);
         },
         modal: { ondismiss: () => setPaying(false) },
       });
       rzp.open();
-    } catch {
+    } catch (error) {
       setPaying(false);
+      setPaymentError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
     }
   }
 
@@ -175,6 +204,7 @@ export default function CheckoutPage() {
                 className="w-full bg-brand hover:bg-brand2 disabled:opacity-50 text-white rounded-xl py-3 font-semibold transition-colors">
                 {paying ? 'Processing...' : 'Confirm & Pay'}
               </button>
+              {paymentError && <p className="text-red text-xs leading-snug">{paymentError}</p>}
             </div>
           </div>
         </div>

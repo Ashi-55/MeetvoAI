@@ -25,7 +25,7 @@ const STATUS_COLORS: Record<string, string> = {
   approved: 'bg-green/20 text-green',
   completed: 'bg-green/20 text-green',
   disputed: 'bg-red/20 text-red',
-  cancelled: 'bg-text3/20 text-text3',
+  cancelled: 'bg-surface3 text-text3',
 };
 
 export default function OrdersPage() {

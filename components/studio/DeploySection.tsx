@@ -70,7 +70,7 @@ export function DeploySection({
   const disabled = !isSubscribed || spinner || !cleanSubdomain(subdomain) || available === false;
 
   return (
-    <div className="mt-8 rounded-2xl border border-border bg-surface2/30 p-5">
+    <div className="mt-8 rounded-2xl border border-border bg-surface2 p-5">
       <div className="text-text2 font-extrabold text-xl flex items-center gap-2">
         🚀 Deploy Your Agent
       </div>
@@ -118,7 +118,7 @@ export function DeploySection({
           ].map((t) => (
             <div key={t} className="flex items-start gap-2">
               <div className="mt-0.5">
-                <Check size={14} className="text-teal-200" />
+                <Check size={14} className="text-amber-200" />
               </div>
               <div className="text-sm text-text3">{t}</div>
             </div>
@@ -127,7 +127,7 @@ export function DeploySection({
 
         <Button
           disabled={disabled}
-          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-extrabold relative"
+          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold relative"
           onClick={async () => {
             if (!isSubscribed) {
               setShowPlans(true);
@@ -149,7 +149,7 @@ export function DeploySection({
         {!isSubscribed ? (
           <div className="text-xs text-text3">
             Deploy is available on paid plans.{' '}
-            <button className="text-teal-200 hover:text-teal-100 font-semibold" onClick={() => setShowPlans(true)} type="button">
+            <button className="text-amber-200 hover:text-amber-100 font-semibold" onClick={() => setShowPlans(true)} type="button">
               Upgrade
             </button>
           </div>
@@ -165,7 +165,7 @@ export function DeploySection({
             You need an active subscription to deploy agents.
           </div>
           <div className="mt-4 flex gap-2">
-            <Button onClick={() => (window.location.href = '/pricing')} className="w-full bg-teal-500 hover:bg-teal-600 text-white">
+            <Button onClick={() => (window.location.href = '/pricing')} className="w-full bg-amber-500 hover:bg-amber-600 text-white">
               Upgrade
             </Button>
           </div>

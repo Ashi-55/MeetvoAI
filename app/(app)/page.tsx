@@ -1,557 +1,345 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Globe, Search, Users, ChevronDown, Zap, Lock, Send, TrendingUp } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { AgentCard, AgentCardSkeleton } from '@/components/marketplace/AgentCard';
-import { BuilderCard, BuilderCardSkeleton } from '@/components/marketplace/BuilderCard';
-import type { Agent, BuilderProfile, Profile } from '@/types';
+import {
+  ArrowRight,
+  BadgeCheck,
+  Bot,
+  BriefcaseBusiness,
+  Check,
+  ChevronDown,
+  Clock,
+  CreditCard,
+  Globe2,
+  Layers3,
+  Lock,
+  MessageSquare,
+  Mic,
+  Play,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Workflow,
+  Zap,
+} from 'lucide-react';
 
-const AI_CATEGORIES = ['All', 'WhatsApp', 'Customer Support', 'Lead Gen', 'Booking', 'E-commerce'];
+const sections = {
+  problems: [
+    ['AI feels expensive and unclear', 'Most SMBs know AI can help, but not what to build first or who to trust.'],
+    ['Builders need serious buyers', 'Good AI builders waste time chasing scattered leads instead of shipping paid work.'],
+    ['Delivery needs trust', 'Escrow, scope clarity, messaging, and status tracking need to live in one place.'],
+  ],
+  categories: ['WhatsApp automation', 'Voice agents', 'AI websites', 'Booking systems', 'Lead generation', 'CRM workflows', 'Support chatbots', 'Custom AI systems'],
+  faqs: [
+    ['Is MeetvoAI for non-technical businesses?', 'Yes. A business owner can describe the problem in plain language and either generate a plan in AI Studio or connect with a verified builder who can deliver it.'],
+    ['How does escrow work?', 'Payment is held while the builder works. Funds are released after the buyer approves delivery.'],
+    ['Can builders publish agents?', 'Yes. Builders can create, publish, and sell AI agents while managing deals and messages from the dashboard.'],
+    ['What can AI Studio generate?', 'AI Studio can generate automation plans, website previews, workflows, deployment structure, and recommended builder handoff details.'],
+  ],
+};
 
-function FeaturesSection() {
-  const [activeTab, setActiveTab] = useState<'studio' | 'marketplace' | 'escrow'>('studio');
-
-  const tabs = [
-    { id: 'studio' as const, label: 'AI Studio' },
-    { id: 'marketplace' as const, label: 'Marketplace' },
-    { id: 'escrow' as const, label: 'Escrow Protection' },
-  ];
-
-  const content = {
-    studio: {
-      heading: 'Describe in any language',
-      description: 'AI builds the complete workflow instantly. No coding required.',
-      icon: '✨',
-    },
-    marketplace: {
-      heading: 'Browse trusted builders',
-      description: 'Browse trusted builders with real portfolios. Message directly. No middlemen.',
-      icon: '👥',
-    },
-    escrow: {
-      heading: 'Secure payments',
-      description: 'Payment is held securely in escrow. Released only after you approve the delivered work. Zero risk.',
-      icon: '🔒',
-    },
-  };
-
+function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: string; body?: string }) {
   return (
-    <div>
-      <div className="mb-8 flex gap-3 justify-center flex-wrap">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-              activeTab === tab.id
-                ? 'bg-teal text-background'
-                : 'bg-transparent border border-surface3 text-text2 hover:text-white'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="grid lg:grid-cols-2 gap-8 items-center"
-      >
-        <div>
-          <h3 className="text-3xl font-bold text-white mb-4">{content[activeTab].heading}</h3>
-          <p className="text-lg text-text2">{content[activeTab].description}</p>
-        </div>
-        <div className="rounded-[16px] border border-surface3 bg-surface p-8 flex items-center justify-center min-h-64">
-          <div className="text-5xl">{content[activeTab].icon}</div>
-        </div>
-      </motion.div>
+    <div className="mx-auto mb-12 max-w-3xl text-center">
+      <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#00C2A8]">{eyebrow}</p>
+      <h2 className="mt-4 text-3xl font-black tracking-[-0.03em] text-text sm:text-4xl lg:text-5xl">{title}</h2>
+      {body && <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-text2">{body}</p>}
     </div>
   );
 }
 
-function FAQAccordion({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false);
-
+function StudioMockup() {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="rounded-[12px] border border-surface3 bg-surface overflow-hidden"
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.15 }}
+      className="premium-card relative overflow-hidden rounded-[24px] p-4 sm:p-5"
     >
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full px-6 py-5 flex items-center justify-between hover:bg-surface2 transition"
-      >
-        <span className="text-left font-semibold text-white text-lg">{question}</span>
-        <ChevronDown
-          size={20}
-          className={`text-teal transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-      <motion.div
-        initial={false}
-        animate={{ height: open ? 'auto' : 0 }}
-        transition={{ duration: 0.3 }}
-        className="overflow-hidden"
-      >
-        <div className="px-6 py-4 text-text2 border-t border-surface3">
-          {answer}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00C2A8] to-transparent" />
+      <div className="flex items-center justify-between border-b border-border pb-4">
+        <div>
+          <p className="text-sm font-bold text-text">AI Studio</p>
+          <p className="text-xs text-text2">Real-time business build plan</p>
         </div>
-      </motion.div>
+        <div className="flex items-center gap-2 rounded-full border border-[#00C2A8]/30 bg-[#00C2A8]/10 px-3 py-1 text-xs font-bold text-[#00C2A8]">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-[#00C2A8]" />
+          Generating
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-[20px] border border-border bg-surface2 p-4">
+        <div className="mb-3 flex items-center gap-2 text-xs text-text2">
+          <Mic size={14} className="text-[#00C2A8]" />
+          Prompt
+        </div>
+        <p className="text-lg font-semibold text-text">&quot;My clinic misses appointments&quot;</p>
+      </div>
+
+      <div className="mt-5 grid gap-3">
+        {[
+          ['WhatsApp automation', 'Reminder messages, reschedule links, patient intake'],
+          ['Booking system', 'Doctor slots, confirmation flow, cancellation guardrails'],
+          ['Website suggestion', 'Clinic landing page with appointment CTA'],
+          ['Recommended builder', 'Healthcare automation specialist, replies in 4h'],
+        ].map(([title, body], index) => (
+          <motion.div
+            key={title}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.35, delay: 0.35 + index * 0.1 }}
+            className="rounded-[18px] border border-border bg-surface p-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#5B5EF7]/16 text-[#8EA0FF]">
+                {index === 0 ? <MessageSquare size={16} /> : index === 1 ? <Clock size={16} /> : index === 2 ? <Globe2 size={16} /> : <BadgeCheck size={16} />}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-text">{title}</p>
+                <p className="mt-0.5 text-xs leading-5 text-text2">{body}</p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        {['Workflow', 'Preview', 'Handoff'].map((item) => (
+          <div key={item} className="rounded-[16px] border border-border bg-surface2 p-3 text-center text-xs font-bold text-text2">{item}</div>
+        ))}
+      </div>
     </motion.div>
   );
 }
 
 export default function HomePage() {
-  return <LandingPage />;
-}
-
-function LandingPage() {
   return (
-    <div className="min-h-screen bg-page text-white">
-      <section id="home" className="relative overflow-hidden px-4 pt-24 pb-20 lg:px-8 lg:pt-32">
-        <div className="absolute inset-0 grid grid-cols-1 gap-0 bg-page grid-lines opacity-20" />
-        <div className="absolute inset-x-0 top-0 h-96 bg-[radial-gradient(circle_at_top,_rgba(174, 155, 201, 0.07),_transparent_45%)] pointer-events-none" />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-center text-center">
-          <span className="mb-6 inline-flex items-center rounded-full border border-[#ae9bc940] bg-[#08080F] px-5 py-2 text-sm font-medium text-[#ae9bc9]">
-            Built for India · AI automation
-          </span>
-          <h1 className="text-5xl font-extrabold leading-tight tracking-[-0.05em] text-white sm:text-6xl lg:text-[5.5rem]">
-            Build AI Agents.<br />
-            <span className="text-gradient-teal-blue">Or Connect With One Who Can.</span>
+    <div className="premium-shell min-h-screen overflow-hidden text-text">
+      <section id="home" className="relative mx-auto grid min-h-[92vh] max-w-7xl items-center gap-12 px-4 pb-16 pt-28 sm:px-6 lg:grid-cols-[1fr_0.92fr] lg:px-8">
+        <div className="absolute inset-x-4 bottom-0 hidden h-px bg-gradient-to-r from-transparent via-border to-transparent lg:block" />
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65 }}>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-text2">
+            <Sparkles size={15} className="text-[#00C2A8]" />
+            AI adoption platform for SMBs and builders
+          </div>
+          <h1 className="max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.05em] text-text sm:text-6xl lg:text-[78px]">
+            Describe your business problem. AI builds it. Or connect with one who can.
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-[#9490B5] sm:text-xl">
-            India&apos;s AI Automation Platform for SMBs, builders, and AI-first workflows.
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-text2">
+            MeetvoAI helps businesses adopt AI while helping AI builders find serious clients, manage delivery, and get paid through protected workflows.
           </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/signup?role=business" className="inline-flex items-center justify-center rounded-full bg-[#ae9bc9] px-8 py-4 text-base font-semibold text-[#08080F] transition hover:bg-[#6F4EEA]">
-              I Need AI for My Business
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <Link href="/studio" className="premium-button inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-bold">
+              Start Building <ArrowRight size={18} />
             </Link>
-            <Link href="/signup?role=builder" className="inline-flex items-center justify-center rounded-full border border-white/15 bg-transparent px-8 py-4 text-base font-semibold text-white transition hover:bg-[#1E1B3A]">
-              I Build AI Agents
+            <Link href="/marketplace" className="inline-flex items-center justify-center gap-2 rounded-[14px] border border-border bg-surface px-6 py-4 text-sm font-bold text-text transition hover:border-[#00C2A8]/50 hover:bg-surface2">
+              Connect With One Who Can <Search size={18} />
             </Link>
           </div>
-
-          <div className="mt-12 mb-2 flex w-full max-w-3xl flex-wrap justify-center gap-3">
-            {['Escrow Protected', 'Trusted Builders', 'Made in India'].map((badge) => (
-              <div key={badge} className="rounded-2xl border border-[#1E1B3A] bg-[#100F1C] px-4 py-3 text-sm text-[#9490B5]">
-                {badge}
-              </div>
+          <div className="mt-8 grid max-w-2xl grid-cols-3 gap-3">
+            {['Escrow protected', 'Verified builders', 'AI-native studio'].map((item) => (
+              <div key={item} className="rounded-[18px] border border-border bg-surface p-4 text-sm font-semibold text-text2">{item}</div>
             ))}
           </div>
-
-          <div className="relative left-1/2 mt-0 w-screen -translate-x-1/2 overflow-hidden py-5">
-            <div className="marquee inline-flex min-w-max items-center whitespace-nowrap text-sm text-[#9490B5]">
-              <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
-              <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
-              <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
-              <span className="mr-12">WhatsApp Bot • Lead Generation • Appointment Booking • E-commerce Agent • Restaurant Automation • Clinic Management • Real Estate Bot • Support Agent •</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto mb-20 max-w-7xl px-4 lg:px-8">
-        <div className="w-full rounded-[16px] border border-[#1E1B3A] bg-[#100F1C] p-10">
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-            { value: '63M+', label: 'SMBs in India' },
-            { value: '$197B', label: 'Market Opportunity' },
-            { value: '24/7', label: 'Agent Uptime' },
-          ].map((item) => (
-            <div key={item.label} className="text-center">
-              <p className="text-4xl font-bold text-[#ae9bc9]">{item.value}</p>
-              <p className="mt-2 text-sm text-[#9490B5]">{item.label}</p>
-            </div>
-          ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="mx-auto mb-20 max-w-7xl px-4 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-[#1E1B3A] bg-surface p-8">
-            <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">How It Works</p>
-            <h2 className="mt-4 text-4xl font-bold text-white">Find a Builder</h2>
-            <div className="mt-8 space-y-4">
-              {[
-                { title: 'Browse trusted builders', detail: 'Explore curated profiles, ratings, and completed AI projects.' },
-                { title: 'Start a conversation', detail: 'Message builders directly and agree on scope, price, and timeline.' },
-                { title: 'Secure payment', detail: 'Use escrow protection so funds are released only after delivery.' },
-                { title: 'Approve your automation', detail: 'Review the delivered solution and deploy with confidence.' },
-                { title: 'Scale with more agents', detail: 'Expand with chatbots, workflows, and AI studio builds.' },
-              ].map((step, index) => (
-                <div key={step.title} className="flex gap-4 rounded-3xl border border-[#ae9bc940] p-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ae9bc940] text-xl font-bold text-[#ae9bc9]">{index + 1}</div>
-                  <div>
-                    <p className="font-semibold text-white">{step.title}</p>
-                    <p className="mt-1 text-sm text-[#9490B5]">{step.detail}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-[#1E1B3A] bg-surface p-8">
-            <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">How It Works</p>
-            <h2 className="mt-4 text-4xl font-bold text-white">Build It Yourself</h2>
-            <div className="mt-8 space-y-4">
-              {[
-                { title: 'Describe your vision', detail: 'Tell us what automation you need for your business.' },
-                { title: 'Generate a plan', detail: 'AI Studio creates your agent workflow, prompts, and launch steps.' },
-                { title: 'Review and customize', detail: 'Refine the agent with AI feedback and your business details.' },
-                { title: 'Deploy instantly', detail: 'Launch your automation on WhatsApp, website, or chat channels.' },
-                { title: 'Grow with analytics', detail: 'Track performance and iterate with smarter workflows.' },
-              ].map((step, index) => (
-                <div key={step.title} className="flex gap-4 rounded-3xl border border-[#ae9bc940] p-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ae9bc940] text-xl font-bold text-[#ae9bc9]">{index + 1}</div>
-                  <div>
-                    <p className="font-semibold text-white">{step.title}</p>
-                    <p className="mt-1 text-sm text-[#9490B5]">{step.detail}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto mb-20 max-w-7xl px-4 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">The Problem</p>
-          <h2 className="mt-4 text-4xl lg:text-5xl font-bold text-white">What's slowing Indian businesses down?</h2>
-          <p className="mt-4 text-lg text-[#9490B5] max-w-2xl mx-auto">Let's uncover what's really blocking your growth.</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {[
-            {
-              icon: '💸',
-              title: 'Tech costs are unpredictable',
-              description: 'Agencies charge lakhs with no guarantee of quality or timeline.',
-            },
-            {
-              icon: '⏳',
-              title: 'Finding the right builder takes months',
-              description: 'You interview 10 people and still aren\'t sure who to trust.',
-            },
-            {
-              icon: '🤖',
-              title: 'AI tools are too complex',
-              description: 'ChatGPT, Make.com, Zapier — where do you even start?',
-            },
-            {
-              icon: '😤',
-              title: 'No payment protection',
-              description: 'You pay upfront and hope the work gets delivered.',
-            },
-          ].map((problem, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group rounded-[16px] border border-surface3 bg-surface p-7 hover:border-teal transition-all duration-300"
-            >
-              <div className="text-4xl mb-4">{problem.icon}</div>
-              <h3 className="text-lg font-semibold text-white mb-2">{problem.title}</h3>
-              <p className="text-[#9490B5]">{problem.description}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section id="services" className="mx-auto mb-20 max-w-7xl px-4 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">The Solution</p>
-          <h2 className="mt-4 text-4xl lg:text-5xl font-bold text-white">How MeetvoAI solves this</h2>
-          <p className="mt-4 text-lg text-[#9490B5] max-w-2xl mx-auto">Smart, focused, and built for India.</p>
-        </div>
-        <FeaturesSection />
-      </section>
-
-      <section className="mx-auto mb-20 max-w-7xl px-4 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Capabilities</p>
-          <h2 className="mt-4 text-4xl lg:text-5xl font-bold text-white">Everything you need to automate</h2>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[
-            { icon: <Zap className="w-6 h-6 text-teal" />, title: 'Instant AI Workflows', description: 'Generate agent logic in seconds' },
-            { icon: <Users className="w-6 h-6 text-teal" />, title: 'Trusted Builder Network', description: 'Vetted professionals ready to deploy' },
-            { icon: <Lock className="w-6 h-6 text-teal" />, title: 'Escrow Protection', description: 'Pay only when satisfied' },
-            { icon: <Send className="w-6 h-6 text-teal" />, title: 'Multi-channel Deploy', description: 'WhatsApp, website, Telegram' },
-            { icon: <Globe className="w-6 h-6 text-teal" />, title: 'Made for India', description: 'Built for Indian SMBs and local languages' },
-            { icon: <TrendingUp className="w-6 h-6 text-teal" />, title: 'Zero to Launch', description: 'From idea to live agent in days not months' },
-          ].map((benefit, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.08 }}
-              className="rounded-[12px] border border-surface3 bg-surface p-6"
-            >
-              <div className="mb-4">{benefit.icon}</div>
-              <h3 className="text-lg font-semibold text-white mb-2">{benefit.title}</h3>
-              <p className="text-text2 text-sm">{benefit.description}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto mb-20 max-w-7xl px-4 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Help Center</p>
-          <h2 className="mt-4 text-4xl lg:text-5xl font-bold text-white">Frequently Asked Questions</h2>
-        </div>
-        <div className="max-w-3xl mx-auto space-y-4">
-          <FAQAccordion
-            question="Is MeetvoAI free to use?"
-            answer="Signing up and browsing the marketplace is completely free. AI Studio requires a subscription."
-          />
-          <FAQAccordion
-            question="How does escrow protection work?"
-            answer="When you hire a builder, payment is held securely. It's only released to the builder after you review and approve the delivered work."
-          />
-          <FAQAccordion
-            question="What kind of AI agents can I build?"
-            answer="WhatsApp bots, lead generation agents, appointment booking systems, customer support agents, e-commerce automation and much more."
-          />
-          <FAQAccordion
-            question="How long does it take to get an agent built?"
-            answer="Using AI Studio you can generate a workflow in seconds. Working with a builder typically takes 3-7 days."
-          />
-          <FAQAccordion
-            question="Is MeetvoAI only for India?"
-            answer="We're built for Indian SMBs first but anyone can use the platform."
-          />
-        </div>
-      </section>
-
-      <section className="mx-auto mb-20 max-w-7xl px-4 lg:px-8 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="rounded-[20px] border border-teal bg-gradient-to-br from-dark-gradient-start to-dark-gradient-end p-12 md:p-16"
-        >
-          <div className="flex flex-col items-center text-center gap-8">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Ready to automate your business?</h2>
-              <p className="text-lg text-[#9490B5]">Join India's AI automation platform today.</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/signup?role=business" className="inline-flex items-center justify-center rounded-full bg-teal px-8 py-4 text-base font-semibold text-background transition hover:bg-teal-dark">
-                I Need AI for My Business
-              </Link>
-              <Link href="/signup?role=builder" className="inline-flex items-center justify-center rounded-full border border-surface3 bg-transparent px-8 py-4 text-base font-semibold text-white transition hover:bg-surface3">
-                I Build AI Agents
-              </Link>
-            </div>
-          </div>
         </motion.div>
+        <StudioMockup />
       </section>
 
-      <section className="mx-auto mb-20 max-w-7xl px-4 lg:px-8">
-        <div className="rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-6 shadow-teal">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">AI Studio Showcase</p>
-              <h2 className="mt-3 text-3xl font-bold text-white">Create agents with a smart terminal UI</h2>
-            </div>
-          </div>
-          <div className="overflow-hidden rounded-3xl border border-[#1E1B3A] bg-[#0F172A] p-6">
-            <div className="mb-4 flex items-center gap-2 text-sm text-[#9490B5]">
-              <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#ae9bc9] animate-pulse" />
-              AI Studio terminal — generating your workflow
-            </div>
-            <div className="space-y-3 font-mono text-sm text-[#9490B5]">
-              <p className="text-[#ae9bc9]">$ meetvo generate automation --name restaurant-bot</p>
-              <p>Initializing workflow engine...</p>
-              <p className="text-white">Connected to WhatsApp, CRM, and payment APIs.</p>
-              <p className="text-[#ae9bc9]">Intent capacity: lead capture, order booking, support.</p>
-              <p className="text-[#9490B5]">&gt; Response patterns loaded. Deploy with one click.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="marketplace" className="mx-auto mb-20 max-w-7xl px-4 lg:px-8">
-        <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">What You Can Build</p>
-            <h2 className="mt-3 text-4xl font-bold text-white">Launch AI solutions for every industry</h2>
-          </div>
-          <Link href="/studio" className="inline-flex items-center gap-2 rounded-full bg-[#ae9bc9] px-5 py-3 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA]">
-            Try AI Studio <ArrowRight size={16} />
-          </Link>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid gap-4 rounded-[24px] border border-border bg-surface p-4 sm:grid-cols-4">
           {[
-            'WhatsApp Lead Bot',
-            'Support Assistant',
-            'Booking Agent',
-            'Sales Outreach',
-            'E-commerce Concierge',
-            'Appointment Scheduler',
-          ].map((title) => (
-            <div key={title} className="rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-6 transition hover:border-[#ae9bc9]">
-              <p className="text-sm uppercase tracking-[0.25em] text-[#9490B5]">AI Agent</p>
-              <h3 className="mt-4 text-xl font-semibold text-white">{title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[#9490B5]">Fast to launch, easy to adapt, and fully backed by Indian payments.</p>
+            ['SMB-first', 'Plain-language AI adoption'],
+            ['Escrow', 'Protected project payments'],
+            ['Studio', 'Generate workflows instantly'],
+            ['Marketplace', 'Trusted builders and agents'],
+          ].map(([title, body]) => (
+            <div key={title} className="rounded-[20px] border border-border bg-surface2 p-5">
+              <p className="text-xl font-black text-text">{title}</p>
+              <p className="mt-2 text-sm leading-6 text-text2">{body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto mb-20 max-w-7xl px-4 lg:px-8">
-        <div className="rounded-[36px] border border-[#ae9bc9] bg-[#08080F] p-8 shadow-teal">
-          <div className="flex flex-col items-center text-center gap-6">
-            <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Ready to launch</p>
-              <h2 className="mt-4 text-4xl font-bold text-white">Start building or find AI experts today</h2>
-              <p className="mt-4 max-w-xl text-[#9490B5] mx-auto">This is the fastest path from idea to deployed automation for Indian SMBs.</p>
-            </div>
-            <Link href="/signup?role=business" className="inline-block rounded-[50px] bg-[#ae9bc9] px-12 py-3.5 text-base font-semibold text-[#08080F] transition hover:bg-[#6F4EEA] mt-6 mx-auto">
-              Get Started
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader eyebrow="The Problem" title="AI adoption is still too confusing for real businesses." body="MeetvoAI turns vague operational pain into scoped AI work, trusted delivery, and measurable outcomes." />
+        <div className="grid gap-5 md:grid-cols-3">
+          {sections.problems.map(([title, body], index) => (
+            <motion.div key={title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.08 }} className="premium-card rounded-[20px] p-6">
+              <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#5B5EF7]/15 text-[#8EA0FF]">{index + 1}</div>
+              <h3 className="text-xl font-black text-text">{title}</h3>
+              <p className="mt-3 leading-7 text-text2">{body}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader eyebrow="How MeetvoAI Works" title="One system for idea, build, trust, and delivery." />
+        <div className="grid gap-5 lg:grid-cols-4">
+          {[
+            [Sparkles, 'Describe', 'Tell AI what your business needs in natural language.'],
+            [Workflow, 'Generate', 'Get an automation plan, website preview, and workflow map.'],
+            [BriefcaseBusiness, 'Build or connect', 'Continue in Studio or connect with a verified builder who can deliver it.'],
+            [ShieldCheck, 'Approve', 'Track delivery and release payment after approval.'],
+          ].map(([Icon, title, body]) => {
+            const StepIcon = Icon as typeof Sparkles;
+            return (
+              <div key={title as string} className="rounded-[20px] border border-border bg-surface p-6">
+                <StepIcon className="text-[#00C2A8]" size={24} />
+                <h3 className="mt-5 text-xl font-black text-text">{title as string}</h3>
+                <p className="mt-3 text-sm leading-6 text-text2">{body as string}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section id="services" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#00C2A8]">AI Studio Showcase</p>
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] text-text lg:text-6xl">Perplexity-simple. Canva-visual. Vercel-fast.</h2>
+            <p className="mt-5 text-lg leading-8 text-text2">AI Studio is the product wedge: prompt, voice, multilingual input, workflow nodes, generated previews, and a clean deploy path.</p>
+            <Link href="/studio" className="mt-8 inline-flex items-center gap-2 rounded-[14px] bg-[#5B5EF7] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4B4EE8]">
+              Open AI Studio <ArrowRight size={16} />
             </Link>
           </div>
+          <div className="premium-card rounded-[24px] p-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              {[
+                [Bot, 'AI suggestions', 'Next best automations and missing business details.'],
+                [Layers3, 'Visual nodes', 'Inputs, actions, APIs, approvals, and deployment steps.'],
+                [Globe2, 'Website preview', 'Instant landing page and booking flow mockup.'],
+                [Zap, 'Automation preview', 'WhatsApp, CRM, payments, and notifications.'],
+              ].map(([Icon, title, body]) => {
+                const CardIcon = Icon as typeof Bot;
+                return (
+                  <div key={title as string} className="rounded-[18px] border border-border bg-surface2 p-5">
+                    <CardIcon size={22} className="text-[#00C2A8]" />
+                    <p className="mt-4 font-black text-text">{title as string}</p>
+                    <p className="mt-2 text-sm leading-6 text-text2">{body as string}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
-      <footer className="border-t border-[#1E1B3A] bg-[#100F1C] py-10 px-4 lg:px-8">
+      <section id="marketplace" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader eyebrow="Marketplace" title="Premium builder discovery with the trust signals SMBs need." />
+        <div className="grid gap-5 lg:grid-cols-3">
+          {['WhatsApp automation expert', 'Voice agent builder', 'AI website studio'].map((title, index) => (
+            <div key={title} className="premium-card rounded-[20px] p-6">
+              <div className="flex items-start gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#5B5EF7]/15 text-xl font-black text-text">{['A', 'K', 'M'][index]}</div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-black text-text">{title}</h3>
+                    <BadgeCheck size={16} className="text-[#00C2A8]" />
+                  </div>
+                  <p className="mt-1 text-sm text-text2">Replies in {index + 2}h · English, Hindi</p>
+                </div>
+              </div>
+              <div className="mt-5 flex items-center gap-2 text-sm text-text2">
+                <Star size={15} className="fill-[#F59E0B] text-[#F59E0B]" /> 4.{9 - index} · {24 + index * 11} completed projects
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {['Verified', 'Escrow ready', 'Healthcare'].map((tag) => <span key={tag} className="rounded-full border border-border bg-surface2 px-3 py-1 text-xs font-semibold text-text2">{tag}</span>)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="grid gap-5 lg:grid-cols-2">
+          <div className="premium-card rounded-[24px] p-8">
+            <Lock className="text-[#00C2A8]" size={28} />
+            <h2 className="mt-5 text-3xl font-black text-text">Escrow and trust are built into the workflow.</h2>
+            <p className="mt-4 leading-7 text-text2">Buyers get confidence before payment. Builders get clarity before delivery. Admins get an operations view for payments, disputes, and moderation.</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {sections.categories.map((item) => (
+              <div key={item} className="rounded-[18px] border border-border bg-surface p-4 text-sm font-bold text-text">{item}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader eyebrow="Pricing" title="Plans for businesses, builders, and enterprise teams." />
+        <div className="grid gap-5 lg:grid-cols-3">
+          {[
+            ['Business', 'Start adopting AI with Studio and marketplace access.', '₹2,999/mo'],
+            ['Builder', 'Publish agents, manage clients, and earn through escrow.', '₹1,999/mo'],
+            ['Enterprise', 'Custom workflows, governance, and premium support.', 'Custom'],
+          ].map(([title, body, price], index) => (
+            <div key={title} className={`rounded-[20px] border p-6 ${index === 1 ? 'border-[#5B5EF7]/60 bg-[#5B5EF7]/10' : 'border-border bg-surface'}`}>
+              <p className="text-xl font-black text-text">{title}</p>
+              <p className="mt-3 text-sm leading-6 text-text2">{body}</p>
+              <p className="mt-6 text-3xl font-black text-text">{price}</p>
+              <Link href="/pricing" className="mt-6 inline-flex w-full items-center justify-center rounded-[14px] bg-text px-4 py-3 text-sm font-black text-page transition hover:opacity-90">View plans</Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader eyebrow="Proof" title="Built to feel serious before the first sales call." />
+        <div className="grid gap-5 lg:grid-cols-3">
+          {['The first AI tool I could explain to my clinic team.', 'Escrow made connecting with a builder feel safe.', 'Finally a place where AI builders can look credible.'].map((quote) => (
+            <div key={quote} className="rounded-[20px] border border-border bg-surface p-6">
+              <p className="leading-7 text-text2">&quot;{quote}&quot;</p>
+              <div className="mt-5 flex items-center gap-2 text-sm font-bold text-text"><Check size={16} className="text-[#00C2A8]" /> Early user feedback</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader eyebrow="FAQ" title="Clear answers for buyers, builders, and investors." />
+        <div className="space-y-3">
+          {sections.faqs.map(([question, answer]) => (
+            <details key={question} className="group rounded-[18px] border border-border bg-surface p-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-black text-text">
+                {question}
+                <ChevronDown className="shrink-0 text-text2 transition group-open:rotate-180" size={18} />
+              </summary>
+              <p className="mt-4 leading-7 text-text2">{answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="premium-card rounded-[28px] p-8 text-center sm:p-12">
+          <Play className="mx-auto text-[#00C2A8]" size={28} />
+          <h2 className="mx-auto mt-5 max-w-3xl text-4xl font-black tracking-[-0.04em] text-text lg:text-6xl">Turn AI curiosity into a live business system.</h2>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href="/studio" className="premium-button inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-bold">Start Building <ArrowRight size={18} /></Link>
+            <Link href="/marketplace" className="inline-flex items-center justify-center rounded-[14px] border border-border bg-surface px-6 py-4 text-sm font-bold text-text hover:bg-surface2">Connect With One Who Can</Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-border px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-lg font-semibold text-white">AI Automation</p>
-            <p className="mt-2 text-sm text-[#9490B5]">AI Automation for Indian businesses, builders, and marketplaces.</p>
+            <p className="text-lg font-black text-text">Meetvo<span className="text-[#00C2A8]">AI</span></p>
+            <p className="mt-2 text-sm text-text2">AI adoption, verified builder connections, and protected delivery.</p>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm text-[#9490B5]">
-            <Link href="/pricing" className="transition hover:text-white">Pricing</Link>
-            <Link href="/studio" className="transition hover:text-white">AI Studio</Link>
-            <Link href="/marketplace" className="transition hover:text-white">Marketplace</Link>
+          <div className="flex flex-wrap gap-5 text-sm font-semibold text-text2">
+            <Link href="/studio" className="hover:text-text">Studio</Link>
+            <Link href="/marketplace" className="hover:text-text">Marketplace</Link>
+            <Link href="/pricing" className="hover:text-text">Pricing</Link>
+            <Link href="/signup" className="hover:text-text">Get started</Link>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-function MarketplacePage() {
-  const [tab, setTab] = useState<'agents' | 'builders'>('agents');
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [builders, setBuilders] = useState<Array<{ profile: Profile; builderProfile: BuilderProfile }>>([]);
-  const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState('All');
-  const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-      const supabase = createClient();
-
-      const [{ data: agentData }, { data: builderData }] = await Promise.all([
-        supabase
-          .from('agents')
-          .select('*, profiles!agents_builder_id_fkey(full_name, avatar_url), builder_profiles(verification_status, avg_rating, response_time_hours)')
-          .eq('is_published', true)
-          .order('purchases', { ascending: false })
-          .limit(18),
-        supabase
-          .from('builder_profiles')
-          .select('*, profiles!builder_profiles_id_fkey(*)')
-          .eq('available', true)
-          .order('avg_rating', { ascending: false })
-          .limit(18),
-      ]);
-
-      setAgents((agentData || []) as Agent[]);
-      if (builderData) {
-        setBuilders((builderData as any).map((item: any) => ({ profile: item.profiles as Profile, builderProfile: item as BuilderProfile })));
-      }
-      setLoading(false);
-    }
-
-    loadData();
-  }, []);
-
-  const filteredAgents = useMemo(() => {
-    return agents.filter((agent) => {
-      const matchesCategory = category === 'All' || agent.category?.includes(category);
-      const matchesSearch = !search || agent.name?.toLowerCase().includes(search.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [agents, category, search]);
-
-  return (
-    <div className="min-h-screen bg-page text-white px-4 py-24 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-[#9490B5]">Marketplace</p>
-            <h1 className="mt-3 text-4xl font-bold text-white">Find trusted AI builders or buy ready-made agents.</h1>
-          </div>
-          <div className="inline-flex rounded-full border border-[#1E1B3A] bg-[#100F1C] p-1">
-            {(['AI Agents', 'Builders'] as const).map((label) => {
-              const key = label === 'AI Agents' ? 'agents' : 'builders';
-              return (
-                <button key={label} onClick={() => setTab(key)}
-                  className={`rounded-full px-5 py-2 text-sm font-semibold transition ${tab === key ? 'bg-[#ae9bc9] text-[#08080F]' : 'text-[#9490B5] hover:text-white'}`}>
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-6">
-          {tab === 'agents' && (
-            <>
-              <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="flex flex-wrap gap-2">
-                  {AI_CATEGORIES.map((cat) => (
-                    <button key={cat} onClick={() => setCategory(cat)}
-                      className={`rounded-full px-4 py-2 text-sm font-medium transition ${category === cat ? 'bg-[#ae9bc9] text-[#08080F]' : 'bg-[#08080F] text-[#9490B5] hover:bg-[#1E1B3A]'}`}>
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-                <div className="ml-auto max-w-sm flex-1">
-                  <div className="relative">
-                    <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9490B5]" size={18} />
-                    <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search agents..."
-                      className="w-full rounded-full border border-[#1E1B3A] bg-[#08080F] px-12 py-3 text-sm text-white outline-none transition focus:border-[#ae9bc9]" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {loading ? Array.from({ length: 6 }).map((_, index) => <AgentCardSkeleton key={index} />)
-                  : filteredAgents.length > 0 ? filteredAgents.map((agent) => <AgentCard key={agent.id} agent={agent as any} />)
-                  : <div className="col-span-full rounded-3xl border border-[#1E1B3A] bg-[#08080F] p-10 text-center text-[#9490B5]">No agents listed yet. Explore builders or create your own AI.</div>}
-              </div>
-            </>
-          )}
-
-          {tab === 'builders' && (
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {loading ? Array.from({ length: 6 }).map((_, index) => <BuilderCardSkeleton key={index} />)
-                : builders.length > 0 ? builders.map(({ profile, builderProfile }) => (
-                  <BuilderCard key={profile.id} profile={profile} builderProfile={builderProfile} />
-                ))
-                : <div className="col-span-full rounded-3xl border border-[#1E1B3A] bg-[#08080F] p-10 text-center text-[#9490B5]">No builders available right now. Check back soon.</div>}
-            </div>
-          )}
-
-        </div>
-      </div>
-    </div>
-  );
-}
-

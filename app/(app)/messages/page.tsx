@@ -192,11 +192,11 @@ export default function MessagesPage() {
   if (!user) {
     return (
       <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-page px-4">
-        <div className="w-full max-w-md rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-10 text-center">
-          <p className="text-5xl"><MessageSquare size={48} color="#1E1B3A" /></p>
+        <div className="w-full max-w-md rounded-3xl border border-[#1B2540] bg-[#131A2A] p-10 text-center">
+          <p className="text-5xl"><MessageSquare size={48} color="#1B2540" /></p>
           <h2 className="mt-6 text-2xl font-semibold text-white">No conversations yet</h2>
-          <p className="mt-3 text-sm text-[#9490B5]">Browse the marketplace to message a builder and start your AI journey.</p>
-          <Link href="/marketplace" className="mt-8 inline-flex rounded-full bg-[#ae9bc9] px-6 py-3 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA]">Browse Marketplace ?</Link>
+          <p className="mt-3 text-sm text-[#A8B3CF]">Browse the marketplace to message a builder and start your AI journey.</p>
+          <Link href="/marketplace" className="mt-8 inline-flex rounded-full bg-[#00C2A8] px-6 py-3 text-sm font-semibold text-[#0B1020] transition hover:bg-[#4B4EE8]">Browse Marketplace ?</Link>
         </div>
       </div>
     );
@@ -204,17 +204,17 @@ export default function MessagesPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] bg-page text-white">
-      <aside className="w-full max-w-[280px] shrink-0 border-r border-[#1E1B3A] bg-[#100F1C]">
-        <div className="border-b border-[#1E1B3A] px-4 py-4">
+      <aside className="w-full max-w-[280px] shrink-0 border-r border-[#1B2540] bg-[#131A2A]">
+        <div className="border-b border-[#1B2540] px-4 py-4">
           <h2 className="text-lg font-semibold text-white">Messages</h2>
-          <p className="mt-1 text-sm text-[#9490B5]">Recent conversations</p>
+          <p className="mt-1 text-sm text-[#A8B3CF]">Recent conversations</p>
         </div>
-        <div className="border-b border-[#1E1B3A] px-4 py-3">
+        <div className="border-b border-[#1B2540] px-4 py-3">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search conversations"
-            className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-2 text-sm text-white outline-none focus:border-[#ae9bc9]"
+            className="w-full rounded-2xl border border-[#1B2540] bg-[#0B1020] px-3 py-2 text-sm text-white outline-none focus:border-[#00C2A8]"
           />
         </div>
         <div className="max-h-[calc(100vh-64px-116px)] overflow-y-auto px-2 py-2">
@@ -226,17 +226,17 @@ export default function MessagesPage() {
               <button
                 key={conv.id}
                 onClick={() => { setSelected(conv); setPaymentWarning(false); }}
-                className={`w-full rounded-3xl px-3 py-3 text-left transition ${selected?.id === conv.id ? 'bg-[#0A172C] border-l-4 border-[#ae9bc9]' : 'hover:bg-[#1E1B3A]'}`}>
+                className={`w-full rounded-3xl px-3 py-3 text-left transition ${selected?.id === conv.id ? 'bg-[#111827] border-l-4 border-[#00C2A8]' : 'hover:bg-[#1B2540]'}`}>
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0A172C] text-base font-bold text-[#ae9bc9]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#111827] text-base font-bold text-[#00C2A8]">
                     {other?.full_name?.[0] || '?'}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <p className="truncate text-sm font-semibold text-white">{other?.full_name || 'Unknown'}</p>
-                      <span className="text-xs text-[#9490B5]">{timeAgo(conv.last_message_at ?? '')}</span>
+                      <span className="text-xs text-[#A8B3CF]">{timeAgo(conv.last_message_at ?? '')}</span>
                     </div>
-                    <p className="mt-1 truncate text-xs text-[#9490B5]">{(conv as any).agent?.name || (conv as any).last_message || 'No messages yet'}</p>
+                    <p className="mt-1 truncate text-xs text-[#A8B3CF]">{(conv as any).agent?.name || (conv as any).last_message || 'No messages yet'}</p>
                   </div>
                   {unread > 0 && (
                     <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red text-[10px] font-semibold text-white">{unread > 9 ? '9+' : unread}</span>
@@ -245,7 +245,7 @@ export default function MessagesPage() {
               </button>
             );
           }) : (
-            <div className="py-8 text-center text-sm text-[#9490B5]">No conversations yet</div>
+            <div className="py-8 text-center text-sm text-[#A8B3CF]">No conversations yet</div>
           )}
         </div>
       </aside>
@@ -253,24 +253,24 @@ export default function MessagesPage() {
       <div className="flex flex-1 flex-col bg-page">
         {selected ? (
           <>
-            <div className="flex h-20 items-center justify-between border-b border-[#1E1B3A] bg-[#100F1C] px-6">
+            <div className="flex h-20 items-center justify-between border-b border-[#1B2540] bg-[#131A2A] px-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0A172C] text-xl font-bold text-[#ae9bc9]">{((selected.buyer_id === user.id ? (selected as any).builder : (selected as any).buyer)?.full_name || 'B')[0]}</div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#111827] text-xl font-bold text-[#00C2A8]">{((selected.buyer_id === user.id ? (selected as any).builder : (selected as any).buyer)?.full_name || 'B')[0]}</div>
                 <div>
                   <p className="text-sm font-semibold text-white">{(selected.buyer_id === user.id ? (selected as any).builder : (selected as any).buyer)?.full_name || 'Builder'}</p>
-                  <p className="text-xs text-[#9490B5]">{((selected as any).builder_profile as any)?.city || 'Online'}</p>
+                  <p className="text-xs text-[#A8B3CF]">{((selected as any).builder_profile as any)?.city || 'Online'}</p>
                 </div>
               </div>
-              <button className="rounded-2xl border border-[#1E1B3A] bg-transparent px-4 py-2 text-sm text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white">
+              <button className="rounded-2xl border border-[#1B2540] bg-transparent px-4 py-2 text-sm text-[#A8B3CF] transition hover:border-[#00C2A8] hover:text-white">
                 View Profile
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-6">
               {messages.length === 0 && (
-                <div className="flex h-full items-center justify-center text-center text-[#9490B5]">
+                <div className="flex h-full items-center justify-center text-center text-[#A8B3CF]">
                   <div>
-                    <p className="text-xl"><MessageSquare size={48} color="#1E1B3A" /></p>
+                    <p className="text-xl"><MessageSquare size={48} color="#1B2540" /></p>
                     <p className="mt-3 text-lg font-medium text-white">Say hello to {(selected.buyer_id === user.id ? (selected as any).builder : (selected as any).buyer)?.full_name}</p>
                   </div>
                 </div>
@@ -283,9 +283,9 @@ export default function MessagesPage() {
                 }
                 return (
                   <div key={msg.id} className={`mb-4 flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[65%] rounded-3xl px-4 py-3 ${isMine ? 'bg-[#ae9bc9] text-[#08080F] rounded-br-[6px]' : 'bg-[#100F1C] text-white border border-[#1E1B3A] rounded-bl-[6px]'}`}>
+                    <div className={`max-w-[65%] rounded-3xl px-4 py-3 ${isMine ? 'bg-[#00C2A8] text-[#0B1020] rounded-br-[6px]' : 'bg-[#131A2A] text-white border border-[#1B2540] rounded-bl-[6px]'}`}>
                       <p className="text-sm leading-6 whitespace-pre-wrap break-words">{msg.content}</p>
-                      <p className={`mt-2 text-[11px] ${isMine ? 'text-[#08080F]' : 'text-[#9490B5]'}`}>{formatTime(createdAt)}</p>
+                      <p className={`mt-2 text-[11px] ${isMine ? 'text-[#0B1020]' : 'text-[#A8B3CF]'}`}>{formatTime(createdAt)}</p>
                     </div>
                   </div>
                 );
@@ -303,42 +303,42 @@ export default function MessagesPage() {
             )}
 
             {showOfferForm && (
-              <div className="mx-6 mb-2 rounded-3xl border border-[#1E1B3A] bg-[#100F1C] p-4">
+              <div className="mx-6 mb-2 rounded-3xl border border-[#1B2540] bg-[#131A2A] p-4">
                 <p className="text-sm font-semibold text-white">Send an Offer</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <input
                     value={offerDesc}
                     onChange={(e) => setOfferDesc(e.target.value)}
                     placeholder="Service description"
-                    className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                    className="w-full rounded-2xl border border-[#1B2540] bg-[#0B1020] px-3 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                   />
                   <input
                     value={offerPrice}
                     onChange={(e) => setOfferPrice(e.target.value)}
                     type="number"
                     placeholder="Price (?)"
-                    className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                    className="w-full rounded-2xl border border-[#1B2540] bg-[#0B1020] px-3 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                   />
                   <input
                     value={offerDays}
                     onChange={(e) => setOfferDays(e.target.value)}
                     type="number"
                     placeholder="Delivery days"
-                    className="w-full rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-3 py-3 text-sm text-white outline-none focus:border-[#ae9bc9]"
+                    className="w-full rounded-2xl border border-[#1B2540] bg-[#0B1020] px-3 py-3 text-sm text-white outline-none focus:border-[#00C2A8]"
                   />
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setShowOfferForm(false)} className="flex-1 rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white">Cancel</button>
-                    <button onClick={sendOffer} disabled={sending} className="flex-1 rounded-2xl bg-[#ae9bc9] px-4 py-3 text-sm font-semibold text-[#08080F] transition disabled:opacity-50 hover:bg-[#6F4EEA]">Send Offer</button>
+                    <button onClick={() => setShowOfferForm(false)} className="flex-1 rounded-2xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-[#A8B3CF] transition hover:border-[#00C2A8] hover:text-white">Cancel</button>
+                    <button onClick={sendOffer} disabled={sending} className="flex-1 rounded-2xl bg-[#00C2A8] px-4 py-3 text-sm font-semibold text-[#0B1020] transition disabled:opacity-50 hover:bg-[#4B4EE8]">Send Offer</button>
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="sticky bottom-0 z-10 border-t border-[#1E1B3A] bg-[#100F1C] px-6 py-4">
+            <div className="sticky bottom-0 z-10 border-t border-[#1B2540] bg-[#131A2A] px-6 py-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 {profile?.current_mode === 'builder' && (
                   <button onClick={() => setShowOfferForm((prev) => !prev)}
-                    className="rounded-2xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white">
+                    className="rounded-2xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-[#A8B3CF] transition hover:border-[#00C2A8] hover:text-white">
                     Send Offer
                   </button>
                 )}
@@ -348,19 +348,19 @@ export default function MessagesPage() {
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
                   rows={1}
                   placeholder="Type a message..."
-                  className="min-h-[56px] flex-1 resize-none rounded-3xl border border-[#1E1B3A] bg-[#08080F] px-4 py-3 text-sm text-white outline-none transition focus:border-[#ae9bc9]"
+                  className="min-h-[56px] flex-1 resize-none rounded-3xl border border-[#1B2540] bg-[#0B1020] px-4 py-3 text-sm text-white outline-none transition focus:border-[#00C2A8]"
                 />
                 <button onClick={() => sendMessage(input)} disabled={!input.trim() || sending}
-                  className="inline-flex h-14 items-center justify-center rounded-3xl bg-[#ae9bc9] px-5 text-sm font-semibold text-[#08080F] transition hover:bg-[#6F4EEA] disabled:opacity-50">
+                  className="inline-flex h-14 items-center justify-center rounded-3xl bg-[#00C2A8] px-5 text-sm font-semibold text-[#0B1020] transition hover:bg-[#4B4EE8] disabled:opacity-50">
                   {sending ? '...' : <Send size={16} />}
                 </button>
               </div>
             </div>
           </>
         ) : (
-          <div className="flex h-full items-center justify-center border-l border-[#1E1B3A] bg-page text-[#9490B5]">
+          <div className="flex h-full items-center justify-center border-l border-[#1B2540] bg-page text-[#A8B3CF]">
             <div className="text-center">
-              <p className="text-4xl"><MessageSquare size={48} color="#1E1B3A" /></p>
+              <p className="text-4xl"><MessageSquare size={48} color="#1B2540" /></p>
               <p className="mt-4 text-xl font-semibold text-white">Select a conversation to start chatting</p>
               <p className="mt-2 text-sm">Your chats and offers will appear here.</p>
             </div>

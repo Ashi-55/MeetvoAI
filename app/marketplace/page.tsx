@@ -33,8 +33,8 @@ function BuilderCard({ item, onMessage }: { item: MarketplaceProfile; onMessage:
     'AI Builder';
 
   return (
-    <div className="bg-[#100F1C] border border-[#1E1B3A] rounded-[14px] overflow-hidden transition-all duration-300 hover:border-[#ae9bc9] hover:shadow-[0_8px_28px_rgba(174,155,201,0.13)] hover:-translate-y-0.5 flex flex-col">
-      <div className="h-14 bg-gradient-to-br from-[#0D2137] to-[#1E1B3A]" />
+    <div className="bg-[#131A2A] border border-[#1B2540] rounded-[14px] overflow-hidden transition-all duration-300 hover:border-[#00C2A8] hover:shadow-[0_8px_28px_rgba(0,194,168,0.13)] hover:-translate-y-0.5 flex flex-col">
+      <div className="h-14 bg-gradient-to-br from-[#0D2137] to-[#1B2540]" />
       <div className="px-4 pb-4 pt-0 flex-1 flex flex-col">
         <div className="-mt-7 flex items-start gap-3">
           <div className="relative">
@@ -42,29 +42,29 @@ function BuilderCard({ item, onMessage }: { item: MarketplaceProfile; onMessage:
               <img
                 src={item.profile.avatar_url as string}
                 alt={item.profile.full_name || 'Builder avatar'}
-                className="w-14 h-14 rounded-full border-4 border-[#100F1C] object-cover"
+                className="w-14 h-14 rounded-full border-4 border-[#131A2A] object-cover"
               />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#c084fc] to-[#8B5CF6] border-4 border-[#100F1C] flex items-center justify-center text-[23px] font-black text-white shadow-[0_0_22px_rgba(139,92,246,0.42)]">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#5B5EF7] to-[#5B5EF7] border-4 border-[#131A2A] flex items-center justify-center text-[23px] font-black text-white shadow-[0_0_22px_rgba(91,94,247,0.42)]">
                 {initials}
               </div>
             )}
           </div>
           <div className="min-w-0">
             <h3 className="text-white text-[17px] font-extrabold truncate">{item.profile.full_name || 'AI Builder'}</h3>
-            <p className="text-[#9490B5] text-[13px] mt-1">{builderTitle}</p>
+            <p className="text-[#A8B3CF] text-[13px] mt-1">{builderTitle}</p>
           </div>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
           {specialties.slice(0, 4).map((skill, idx) => (
-            <span key={idx} className="bg-[#1E1B3A] text-[#ae9bc9] rounded px-2 py-0.5 text-[11px]">
+            <span key={idx} className="bg-[#1B2540] text-[#00C2A8] rounded px-2 py-0.5 text-[11px]">
               {skill}
             </span>
           ))}
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[#9490B5] text-[12px]">
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[#A8B3CF] text-[12px]">
           <span>⭐ {item.builderProfile?.avg_rating?.toFixed(1) ?? '0.0'}</span>
           <span>💼 {item.builderProfile?.total_deals ?? 0} deals</span>
           <span>⚡ Replies in {item.builderProfile?.response_time_hours ?? 24}h</span>
@@ -72,20 +72,20 @@ function BuilderCard({ item, onMessage }: { item: MarketplaceProfile; onMessage:
 
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
-            <div className="text-[11px] text-[#9490B5]">Starting from</div>
+            <div className="text-[11px] text-[#A8B3CF]">Starting from</div>
             <div className="text-[20px] font-bold text-white">{item.builderProfile?.hourly_rate ? `₹${item.builderProfile.hourly_rate}/hr` : '₹2,999'}</div>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={onMessage}
-              className="flex-1 min-w-[92px] rounded-lg border border-[#1E1B3A] bg-transparent px-3 py-1.5 text-[13px] font-semibold text-white transition hover:border-[#ae9bc9] hover:text-[#ae9bc9]"
+              className="flex-1 min-w-[92px] rounded-lg border border-[#1B2540] bg-transparent px-3 py-1.5 text-[13px] font-semibold text-white transition hover:border-[#00C2A8] hover:text-[#00C2A8]"
             >
               Message
             </button>
             <Link
               href={`/builder/${item.profile.id}`}
-              className="flex-1 min-w-[92px] whitespace-nowrap rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-center text-[13px] font-bold text-white transition hover:bg-[#7C3AED]"
+              className="flex-1 min-w-[92px] whitespace-nowrap rounded-lg bg-[#5B5EF7] px-3 py-1.5 text-center text-[13px] font-bold text-white transition hover:bg-[#4B4EE8]"
             >
               View Profile
             </Link>
@@ -103,8 +103,8 @@ function BuyerCard({ item, onMessage }: { item: MarketplaceProfile; onMessage: (
   const industry = item.buyerProfile?.industry || 'General business';
 
   return (
-    <div className="bg-[#100F1C] border border-[#1E1B3A] rounded-[14px] overflow-hidden transition-all duration-300 hover:border-[#ae9bc9] hover:shadow-[0_8px_28px_rgba(174,155,201,0.13)] hover:-translate-y-0.5 flex flex-col">
-      <div className="h-14 bg-gradient-to-br from-[#0D2137] to-[#1E1B3A]" />
+    <div className="bg-[#131A2A] border border-[#1B2540] rounded-[14px] overflow-hidden transition-all duration-300 hover:border-[#00C2A8] hover:shadow-[0_8px_28px_rgba(0,194,168,0.13)] hover:-translate-y-0.5 flex flex-col">
+      <div className="h-14 bg-gradient-to-br from-[#0D2137] to-[#1B2540]" />
       <div className="px-4 pb-4 pt-0 flex-1 flex flex-col">
         <div className="-mt-7 flex items-start gap-3">
           <div className="relative">
@@ -112,49 +112,49 @@ function BuyerCard({ item, onMessage }: { item: MarketplaceProfile; onMessage: (
               <img
                 src={item.profile.avatar_url as string}
                 alt={item.profile.full_name || 'Business avatar'}
-                className="w-14 h-14 rounded-full border-4 border-[#100F1C] object-cover"
+                className="w-14 h-14 rounded-full border-4 border-[#131A2A] object-cover"
               />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#c084fc] to-[#8B5CF6] border-4 border-[#100F1C] flex items-center justify-center text-[23px] font-black text-white shadow-[0_0_22px_rgba(139,92,246,0.42)]">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#5B5EF7] to-[#5B5EF7] border-4 border-[#131A2A] flex items-center justify-center text-[23px] font-black text-white shadow-[0_0_22px_rgba(91,94,247,0.42)]">
                 {initials}
               </div>
             )}
           </div>
           <div className="min-w-0">
             <h3 className="text-white text-[17px] font-extrabold truncate">{item.buyerProfile?.business_name || item.profile.full_name || 'Business Owner'}</h3>
-            <p className="text-[#9490B5] text-[13px] mt-1">{industry}</p>
+            <p className="text-[#A8B3CF] text-[13px] mt-1">{industry}</p>
           </div>
         </div>
 
-        <p className="mt-3 text-sm text-[#9490B5] line-clamp-2">{description}</p>
+        <p className="mt-3 text-sm text-[#A8B3CF] line-clamp-2">{description}</p>
 
         <div className="mt-3 flex flex-wrap gap-2">
           {needs.slice(0, 4).map((need, idx) => (
-            <span key={idx} className="bg-[#1E1B3A] text-[#ae9bc9] rounded px-2 py-0.5 text-[11px]">
+            <span key={idx} className="bg-[#1B2540] text-[#00C2A8] rounded px-2 py-0.5 text-[11px]">
               {need}
             </span>
           ))}
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[#9490B5] text-[12px]">
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[#A8B3CF] text-[12px]">
           <span>📍 {item.buyerProfile?.location || 'Remote / India'}</span>
           <span>💼 {needs.length} needs</span>
           <span>💰 {item.buyerProfile?.budget_range || 'Budget not set'}</span>
         </div>
 
         <div className="mt-4 flex items-end justify-between gap-3">
-          <div className="text-[11px] text-[#9490B5]">Contact business</div>
+          <div className="text-[11px] text-[#A8B3CF]">Contact business</div>
           <div className="flex gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={onMessage}
-              className="flex-1 min-w-[92px] rounded-lg border border-[#1E1B3A] bg-transparent px-3 py-1.5 text-[13px] font-semibold text-white transition hover:border-[#ae9bc9] hover:text-[#ae9bc9]"
+              className="flex-1 min-w-[92px] rounded-lg border border-[#1B2540] bg-transparent px-3 py-1.5 text-[13px] font-semibold text-white transition hover:border-[#00C2A8] hover:text-[#00C2A8]"
             >
               Message
             </button>
             <Link
               href={`/buyer/${item.profile.id}`}
-              className="flex-1 min-w-[92px] whitespace-nowrap rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-center text-[13px] font-bold text-white transition hover:bg-[#7C3AED]"
+              className="flex-1 min-w-[92px] whitespace-nowrap rounded-lg bg-[#5B5EF7] px-3 py-1.5 text-center text-[13px] font-bold text-white transition hover:bg-[#4B4EE8]"
             >
               View Business
             </Link>
@@ -326,13 +326,13 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#08080F] text-white">
-      <header className="sticky top-0 z-50 border-b border-[#1E1B3A] bg-[#08080F]/95 backdrop-blur-xl">
+    <div className="min-h-screen bg-[#0B1020] text-white">
+      <header className="sticky top-0 z-50 border-b border-[#1B2540] bg-[#0B1020]/95 backdrop-blur-xl">
         <div className="relative mx-auto flex h-16 max-w-7xl items-center gap-5 px-4 lg:px-8">
           <Link href="/" className="text-lg font-black tracking-[-0.03em] text-white">
-            Meetvo<span className="text-[#ae9bc9]">AI</span>
+            Meetvo<span className="text-[#00C2A8]">AI</span>
           </Link>
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-[#1E1B3A] bg-[#100F1C] p-1 md:flex">
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-[#1B2540] bg-[#131A2A] p-1 md:flex">
             {[
               ['Dashboard', '/dashboard'],
               ['Marketplace', '/marketplace'],
@@ -342,7 +342,7 @@ export default function MarketplacePage() {
               <Link
                 key={href}
                 href={href}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${href === '/marketplace' ? 'bg-[#ae9bc9] text-[#08080F]' : 'text-[#9490B5] hover:bg-[#1E1B3A] hover:text-white'} ${href === '/studio' ? 'ai-studio-nav-link' : ''}`}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${href === '/marketplace' ? 'bg-[#00C2A8] text-[#0B1020]' : 'text-[#A8B3CF] hover:bg-[#1B2540] hover:text-white'} ${href === '/studio' ? 'ai-studio-nav-link' : ''}`}
               >
                 <span>{label}</span>
                 {href === '/studio' && <span className="studio-new-badge">NEW</span>}
@@ -361,16 +361,16 @@ export default function MarketplacePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#1E1B3A] bg-[#100F1C] px-4 py-2 text-sm font-semibold text-[#9490B5] transition hover:border-[#ae9bc9] hover:text-white"
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#1B2540] bg-[#131A2A] px-4 py-2 text-sm font-semibold text-[#A8B3CF] transition hover:border-[#00C2A8] hover:text-white"
             >
               <ArrowLeft size={16} />
               Back
             </button>
-            <p className="text-xs uppercase tracking-[0.28em] text-[#9490B5]">Marketplace</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-[#A8B3CF]">Marketplace</p>
             <h1 className="mt-3 text-[30px] font-extrabold text-white">
               {isBuilder ? 'Browse Business Requirements' : 'Find Trusted AI Builders'}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm text-[#9490B5]">
+            <p className="mt-3 max-w-2xl text-sm text-[#A8B3CF]">
               {isBuilder
                 ? 'Browse business owners with AI requirements and start chatting with their team.'
                 : 'Connect with expert AI builders. Escrow protected payments.'}
@@ -378,14 +378,14 @@ export default function MarketplacePage() {
 
           <div className="mt-6 flex flex-col gap-4">
             <div className="relative max-w-[600px] w-full">
-              <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[#9490B5]">
+              <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[#A8B3CF]">
                 <Search size={18} />
               </div>
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={isBuilder ? 'Search businesses, needs, industries...' : 'Search builders, skills, agents...'}
-                className="w-full rounded-full border border-[#1E1B3A] bg-[#100F1C] py-3 pl-12 pr-6 text-sm text-white outline-none placeholder:text-[#9490B5]"
+                className="w-full rounded-full border border-[#1B2540] bg-[#131A2A] py-3 pl-12 pr-6 text-sm text-white outline-none placeholder:text-[#A8B3CF]"
               />
             </div>
 
@@ -397,7 +397,7 @@ export default function MarketplacePage() {
                     key={chip}
                     type="button"
                     onClick={() => setActiveChip(chip)}
-                    className={`rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? 'bg-[#ae9bc9] text-white' : 'bg-[#100F1C] border border-[#1E1B3A] text-[#9490B5]'}`}
+                    className={`rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? 'bg-[#00C2A8] text-white' : 'bg-[#131A2A] border border-[#1B2540] text-[#A8B3CF]'}`}
                   >
                     {chip}
                   </button>
@@ -407,15 +407,15 @@ export default function MarketplacePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#1E1B3A] bg-[#0B0A13] p-4 sm:p-5">
+        <div className="rounded-2xl border border-[#1B2540] bg-[#0B1020] p-4 sm:p-5">
           {loading ? (
             <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="h-64 rounded-[16px] bg-[#08080F] animate-pulse" />
+                <div key={index} className="h-64 rounded-[16px] bg-[#0B1020] animate-pulse" />
               ))}
             </div>
           ) : filteredBuilders.length === 0 ? (
-            <div className="py-20 text-center text-[#4B5563]">
+            <div className="py-20 text-center text-[#6B7280]">
               <div className="mb-4 flex items-center justify-center">
                 <Users size={48} />
               </div>
@@ -431,7 +431,7 @@ export default function MarketplacePage() {
                   isBuilder ? <BuyerCard key={item.profile.id} item={item} onMessage={() => handleMessage(item)} /> : <BuilderCard key={item.profile.id} item={item} onMessage={() => handleMessage(item)} />
                 ))}
               </div>
-              <div className="mt-6 flex flex-col gap-3 border-t border-[#1E1B3A] pt-6 text-sm text-[#9490B5] sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-6 flex flex-col gap-3 border-t border-[#1B2540] pt-6 text-sm text-[#A8B3CF] sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   Showing {paginatedBuilders.length} of {filteredBuilders.length} {isBuilder ? 'business listings' : 'builders'}
                 </div>
@@ -440,7 +440,7 @@ export default function MarketplacePage() {
                     type="button"
                     onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                     disabled={page === 1}
-                    className="rounded-full border border-[#1E1B3A] bg-[#100F1C] px-4 py-2 text-sm font-medium text-white transition hover:border-[#ae9bc9] hover:text-[#ae9bc9] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-[#1B2540] bg-[#131A2A] px-4 py-2 text-sm font-medium text-white transition hover:border-[#00C2A8] hover:text-[#00C2A8] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Back
                   </button>
@@ -451,7 +451,7 @@ export default function MarketplacePage() {
                     type="button"
                     onClick={() => setPage((prev) => Math.min(pageCount, prev + 1))}
                     disabled={page === pageCount}
-                    className="rounded-full border border-[#1E1B3A] bg-[#100F1C] px-4 py-2 text-sm font-medium text-white transition hover:border-[#ae9bc9] hover:text-[#ae9bc9] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-[#1B2540] bg-[#131A2A] px-4 py-2 text-sm font-medium text-white transition hover:border-[#00C2A8] hover:text-[#00C2A8] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Next
                   </button>

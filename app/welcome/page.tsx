@@ -37,10 +37,10 @@ export default function WelcomePage() {
     <div className="min-h-screen bg-page text-white overflow-hidden flex flex-col">
       {/* Background gradient */}
       <div className="absolute inset-0 grid grid-cols-1 gap-0 bg-page grid-lines opacity-20" />
-      <div className="absolute inset-x-0 top-0 h-96 bg-[radial-gradient(circle_at_top,_rgba(174, 155, 201, 0.07),_transparent_45%)] pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-96 bg-[radial-gradient(circle_at_top,_rgba(0, 194, 168, 0.07),_transparent_45%)] pointer-events-none" />
 
       {/* Header */}
-      <header className="relative z-10 border-b border-surface3 bg-page/80 backdrop-blur-md">
+      <header className="relative z-10 border-b border-surface3 bg-page backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8">
           <div className="text-2xl font-bold text-gradient-teal-blue">MeetvoAI</div>
         </div>
@@ -58,7 +58,7 @@ export default function WelcomePage() {
             <h1 className="text-5xl font-extrabold leading-tight tracking-[-0.05em] text-white sm:text-6xl mb-6">
               Welcome to MeetvoAI
             </h1>
-            <p className="text-lg text-[#9490B5] sm:text-xl max-w-2xl mx-auto">
+            <p className="text-lg text-[#A8B3CF] sm:text-xl max-w-2xl mx-auto">
               Choose your role to get started. You can always switch between roles later.
             </p>
           </motion.div>
@@ -73,9 +73,9 @@ export default function WelcomePage() {
               className="group relative"
             >
               <Link href="/onboarding/builder">
-                <div className="relative h-full rounded-[20px] border border-surface3 bg-surface p-8 hover:border-teal transition-all duration-300 hover:shadow-[0_8px_32px_rgba(174, 155, 201, 0.15)] overflow-hidden">
+                <div className="relative h-full rounded-[20px] border border-surface3 bg-surface p-8 hover:border-teal transition-all duration-300 hover:shadow-[0_8px_32px_rgba(0, 194, 168, 0.15)] overflow-hidden">
                   {/* Gradient background on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#ae9bc940] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#00C2A840] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
                   <div className="relative z-10">
                     {/* Icon */}
@@ -85,7 +85,7 @@ export default function WelcomePage() {
 
                     {/* Content */}
                     <h3 className="text-2xl font-bold text-white mb-3">AI Builder</h3>
-                    <p className="text-[#9490B5] mb-8">
+                    <p className="text-[#A8B3CF] mb-8">
                       Showcase your AI expertise and connect with businesses that need your skills.
                     </p>
 
@@ -95,30 +95,30 @@ export default function WelcomePage() {
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">Build your professional portfolio</span>
+                        <span className="text-sm text-[#A8B3CF]">Build your professional portfolio</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">Get direct messages from buyers</span>
+                        <span className="text-sm text-[#A8B3CF]">Get direct messages from buyers</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">Secure escrow payments</span>
+                        <span className="text-sm text-[#A8B3CF]">Secure escrow payments</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">Set your own hourly rate</span>
+                        <span className="text-sm text-[#A8B3CF]">Set your own hourly rate</span>
                       </div>
                     </div>
 
                     {/* CTA Button */}
-                    <button className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-teal text-background font-semibold py-3 transition hover:bg-[#6F4EEA] group-hover:translate-x-1 duration-300">
+                    <button className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-teal text-background font-semibold py-3 transition hover:bg-[#4B4EE8] group-hover:translate-x-1 duration-300">
                       Get Started as Builder <ArrowRight size={18} />
                     </button>
                   </div>
@@ -134,9 +134,9 @@ export default function WelcomePage() {
               className="group relative"
             >
               <Link href="/onboarding/buyer">
-                <div className="relative h-full rounded-[20px] border border-surface3 bg-surface p-8 hover:border-teal transition-all duration-300 hover:shadow-[0_8px_32px_rgba(174, 155, 201, 0.15)] overflow-hidden">
+                <div className="relative h-full rounded-[20px] border border-surface3 bg-surface p-8 hover:border-teal transition-all duration-300 hover:shadow-[0_8px_32px_rgba(0, 194, 168, 0.15)] overflow-hidden">
                   {/* Gradient background on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#ae9bc940] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#00C2A840] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
                   <div className="relative z-10">
                     {/* Icon */}
@@ -146,8 +146,8 @@ export default function WelcomePage() {
 
                     {/* Content */}
                     <h3 className="text-2xl font-bold text-white mb-3">Business Owner</h3>
-                    <p className="text-[#9490B5] mb-8">
-                      Build AI agents for your business or hire expert builders from our marketplace.
+                    <p className="text-[#A8B3CF] mb-8">
+                      Build AI agents for your business or connect with builders who can deliver them.
                     </p>
 
                     {/* Features */}
@@ -156,30 +156,30 @@ export default function WelcomePage() {
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">AI Studio - build with no code</span>
+                        <span className="text-sm text-[#A8B3CF]">AI Studio - build with no code</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">Marketplace of verified builders</span>
+                        <span className="text-sm text-[#A8B3CF]">Marketplace of verified builders</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">Escrow protected payments</span>
+                        <span className="text-sm text-[#A8B3CF]">Escrow protected payments</span>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-teal/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <div className="w-2 h-2 rounded-full bg-teal" />
                         </div>
-                        <span className="text-sm text-[#9490B5]">Direct communication with builders</span>
+                        <span className="text-sm text-[#A8B3CF]">Direct communication with builders</span>
                       </div>
                     </div>
 
                     {/* CTA Button */}
-                    <button className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-teal text-background font-semibold py-3 transition hover:bg-[#6F4EEA] group-hover:translate-x-1 duration-300">
+                    <button className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-teal text-background font-semibold py-3 transition hover:bg-[#4B4EE8] group-hover:translate-x-1 duration-300">
                       Get Started as Business Owner <ArrowRight size={18} />
                     </button>
                   </div>
@@ -193,7 +193,7 @@ export default function WelcomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-12 text-center text-sm text-[#9490B5]"
+            className="mt-12 text-center text-sm text-[#A8B3CF]"
           >
             <p>You can switch between roles anytime in your settings</p>
           </motion.div>
