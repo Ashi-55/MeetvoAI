@@ -10,7 +10,8 @@ function cleanUrl(value?: string) {
 
 export async function POST(request: Request) {
   try {
-    const { full_name, email, password } = await request.json();
+    const { full_name, email, password, role } = await request.json();
+    const currentMode = role === 'builder' ? 'builder' : role === 'buyer' ? 'buyer' : null;
 
     if (!full_name || !email || !password) {
       return NextResponse.json({ error: 'Full name, email, and password are required.' }, { status: 400 });
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
         id: userId,
         full_name,
         email,
-        current_mode: null,
+        current_mode: currentMode,
         buyer_onboarding_complete: false,
         builder_onboarding_complete: false,
       }),

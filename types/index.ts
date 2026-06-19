@@ -21,6 +21,8 @@ export interface Profile {
   buyer_onboarding_complete?: boolean;
   builder_onboarding_complete?: boolean;
   created_at?: string;
+  subscription_status?: string;
+  subscription_plan?: string;
 }
 
 export interface BuilderProfile {
@@ -320,5 +322,4 @@ export interface ChatSession {
   responseTimeHours?: number;
   isMinimised?: boolean;
 }
-
 

@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, BadgeCheck, Bot, Building2, Check, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 type Billing = 'monthly' | 'annual';
 type Plan = {
   title: string;
-  audience: 'Business' | 'Builder' | 'Enterprise';
+  audience: 'Business' | 'Builder';
   monthly: number | null;
   description: string;
   features: string[];
@@ -62,16 +63,33 @@ function PlanCard({ plan, billing }: { plan: Plan; billing: Billing }) {
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>('monthly');
+  const { profile } = useAuth();
 
   const plans: Plan[] = [
     {
       title: 'Business Starter',
       audience: 'Business',
-      monthly: 2999,
+      monthly: 1999,
       description: 'For SMBs exploring AI automation with guided Studio output.',
       features: ['AI Studio builds and workflow previews', 'Marketplace access', 'Escrow protected collaboration', 'Basic deployment tracking'],
       cta: 'Start as business',
       href: '/signup?role=business',
+    },
+    {
+      title: 'Builder Starter',
+      audience: 'Builder',
+      monthly: 999,
+      description: 'For solo builders getting started with AI Studio.',
+      features: [
+        'AI Studio access — build and test agents',
+        'Publish up to 3 agents',
+        'Marketplace profile listing',
+        'Secure escrow payments',
+        'Client messaging',
+        'Basic analytics',
+      ],
+      cta: 'Start as builder',
+      href: '/signup?role=builder',
     },
     {
       title: 'Builder Growth',
@@ -92,16 +110,12 @@ export default function PricingPage() {
       cta: 'Choose Growth',
       href: '/signup?role=business',
     },
-    {
-      title: 'Enterprise',
-      audience: 'Enterprise',
-      monthly: null,
-      description: 'For managed AI rollouts, governance, approvals, and support.',
-      features: ['Custom workflows and onboarding', 'Admin controls and approval flows', 'Fraud and dispute monitoring', 'Dedicated implementation support'],
-      cta: 'Contact sales',
-      href: '/signup',
-    },
   ];
+  const visiblePlans = profile?.current_mode === 'builder'
+    ? plans.filter((plan) => plan.audience === 'Builder')
+    : profile?.current_mode === 'buyer'
+      ? plans.filter((plan) => plan.audience === 'Business')
+      : plans;
 
   return (
     <main className="premium-shell min-h-screen px-4 py-24 text-white lg:px-8">
@@ -115,6 +129,9 @@ export default function PricingPage() {
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[#A8B3CF]">
             Start small, prove value, then scale into more workflows, builders, automations, and deployments.
           </p>
+          <div className="mx-auto mt-8 max-w-2xl rounded-[18px] border border-[#00C2A8]/30 bg-[#5B5EF7]/10 px-5 py-4 text-sm font-bold text-white shadow-[0_18px_50px_rgba(91,94,247,0.16)]">
+            Start free — 14-day trial on Starter plans. No card required.
+          </div>
           <div className="mx-auto mt-8 inline-flex rounded-[16px] border border-white/10 bg-white/[0.045] p-1">
             {(['monthly', 'annual'] as const).map((item) => (
               <button
@@ -130,8 +147,12 @@ export default function PricingPage() {
         </section>
 
         <section className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {plans.map((plan) => <PlanCard key={plan.title} plan={plan} billing={billing} />)}
+          {visiblePlans.map((plan) => <PlanCard key={plan.title} plan={plan} billing={billing} />)}
         </section>
+
+        <p className="mx-auto my-8 max-w-3xl text-center text-sm leading-6 text-[#A8B3CF]">
+          Plus 5% transaction fee on marketplace deals · minimum ₹199 · no cap · 4x cheaper than global freelance platforms
+        </p>
 
         <section className="mt-16 grid gap-5 lg:grid-cols-3">
           {[

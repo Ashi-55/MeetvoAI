@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -25,6 +25,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -32,6 +33,11 @@ export default function SignupPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const selectedRole = searchParams.get('role') === 'builder'
+    ? 'builder'
+    : searchParams.get('role') === 'business'
+      ? 'buyer'
+      : null;
 
   async function onSubmit(data: FormData) {
     setLoading(true);
@@ -41,7 +47,7 @@ export default function SignupPage() {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, role: selectedRole }),
       });
       const result = await response.json();
 
@@ -63,7 +69,7 @@ export default function SignupPage() {
         return;
       }
 
-      window.location.assign('/welcome');
+      window.location.assign(selectedRole === 'builder' ? '/onboarding/builder' : selectedRole === 'buyer' ? '/onboarding/buyer' : '/welcome');
     } catch (error) {
       setError('An unexpected error occurred.');
       setLoading(false);
@@ -74,7 +80,7 @@ export default function SignupPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: getAuthRedirectUrl('/welcome') },
+      options: { redirectTo: getAuthRedirectUrl(selectedRole === 'builder' ? '/onboarding/builder' : selectedRole === 'buyer' ? '/onboarding/buyer' : '/welcome') },
     });
   }
 

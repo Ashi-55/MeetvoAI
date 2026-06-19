@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { WorkflowDiagram } from '@/components/studio/WorkflowDiagram';
 import type { StudioBuild } from '@/types';
+import { isTrialExpired, TRIAL_ENDED_MESSAGE } from '@/lib/trial';
 
 const EXAMPLES = [
   'Restaurant WhatsApp bot',
@@ -76,7 +77,7 @@ function buildCode(mode: BuildMode | null, html: string, workflow: any) {
 }
 
 export default function StudioPage() {
-  const { user } = useAuth();
+  const { user, profile, builderProfile } = useAuth();
   const searchParams = useSearchParams();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -108,7 +109,11 @@ export default function StudioPage() {
   const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>('idle');
   const [voiceLevel, setVoiceLevel] = useState(0);
 
-  const canGenerate = Boolean(prompt.trim()) && !generating;
+  const trialExpired = isTrialExpired({
+    createdAt: profile?.created_at || user?.created_at,
+    subscriptionStatus: builderProfile?.subscription_status || profile?.subscription_status,
+  });
+  const canGenerate = Boolean(prompt.trim()) && !generating && !trialExpired;
   const userEmail = user?.email || 'Guest';
   const userInitial = userEmail.charAt(0).toUpperCase();
   const buildTitle = config?.business_name || originalPrompt.slice(0, 35) || 'Untitled build';
@@ -153,6 +158,10 @@ export default function StudioPage() {
       toast.error('Add a prompt to continue.');
       return;
     }
+    if (trialExpired) {
+      toast.error(TRIAL_ENDED_MESSAGE);
+      return;
+    }
 
     if (!isRefinement) {
       setOriginalPrompt(promptToSend);
@@ -191,7 +200,7 @@ export default function StudioPage() {
     } finally {
       setGenerating(false);
     }
-  }, [language, loadHistory, prompt, user]);
+  }, [language, loadHistory, prompt, trialExpired, user]);
 
   async function refine() {
     if (!refinement.trim()) return;
@@ -506,6 +515,13 @@ export default function StudioPage() {
               ) : voiceStatus === 'captured' ? (
                 <div className="mb-3 text-sm font-medium text-[#10b981]">Voice captured ✓</div>
               ) : null}
+
+              {trialExpired && (
+                <div className="mx-auto mb-4 max-w-[780px] rounded-[18px] border border-[#F59E0B]/30 bg-[#F59E0B]/10 px-5 py-4 text-left text-sm font-semibold leading-6 text-[#F8C46D]">
+                  {TRIAL_ENDED_MESSAGE}
+                  <Link href="/pricing" className="ml-2 inline-flex text-white underline underline-offset-4">View plans</Link>
+                </div>
+              )}
 
               <div className={`mx-auto w-full max-w-[780px] rounded-[24px] border bg-[#11182B]/92 px-4 pb-4 pt-5 text-left shadow-[0_30px_90px_rgba(0,0,0,0.34)] ring-1 ring-white/[0.03] transition sm:px-5 ${voiceStatus === 'listening' ? 'border-[#fb7185]' : 'border-[#2A3652]'}`}>
                 <textarea

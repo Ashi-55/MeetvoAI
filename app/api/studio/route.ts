@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { isTrialExpired, TRIAL_ENDED_MESSAGE } from '@/lib/trial';
 
 type UserType = 'business' | 'builder' | 'unknown';
 
@@ -335,6 +336,28 @@ export async function POST(req: Request) {
       );
     }
 
+    const serverSupabase = createClient();
+    const { data: authData } = await serverSupabase.auth.getUser();
+    const user = authData?.user;
+    const userId = user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const service = createServiceClient();
+    const [{ data: profileData }, { data: builderSubscriptionData }] = await Promise.all([
+      service.from('profiles').select('created_at').eq('id', userId).maybeSingle(),
+      service.from('builder_profiles').select('subscription_status').eq('id', userId).maybeSingle(),
+    ]);
+
+    if (isTrialExpired({
+      createdAt: profileData?.created_at || user?.created_at,
+      subscriptionStatus: builderSubscriptionData?.subscription_status,
+    })) {
+      return NextResponse.json({ success: false, error: TRIAL_ENDED_MESSAGE }, { status: 402 });
+    }
+
     const mode = detectMode(prompt);
     const businessType = detectBusinessType(prompt);
 
@@ -351,24 +374,13 @@ export async function POST(req: Request) {
 
     const words = prompt.replace(/[^a-zA-Z0-9\s]/g, '').split(' ').filter(Boolean);
     const businessName = words.slice(0, 3).join(' ') || 'MeetvoAI Business';
-    const subdomain = words.slice(0, 3).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
 
     const config = {
       mode,
       business_name: businessName,
     };
 
-    const serverSupabase = createClient();
-    const { data: authData } = await serverSupabase.auth.getUser();
-    const userId = authData?.user?.id;
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-
     try {
-      const service = createServiceClient();
       const { data: builderProfileData } = await service
         .from('builder_profiles')
         .select('id')

@@ -271,14 +271,15 @@ export default function HomePage() {
       </section>
 
       <section id="pricing" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <SectionHeader eyebrow="Pricing" title="Plans for businesses, builders, and enterprise teams." />
-        <div className="grid gap-5 lg:grid-cols-3">
+        <SectionHeader eyebrow="Pricing" title="Plans for businesses and builders." />
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {[
-            ['Business', 'Start adopting AI with Studio and marketplace access.', '₹2,999/mo'],
-            ['Builder', 'Publish agents, manage clients, and earn through escrow.', '₹1,999/mo'],
-            ['Enterprise', 'Custom workflows, governance, and premium support.', 'Custom'],
+            ['Business Starter', 'Start adopting AI with Studio and marketplace access.', '₹1,999/mo'],
+            ['Builder Starter', 'Build, test, and publish up to 3 agents.', '₹999/mo'],
+            ['Builder Growth', 'Publish agents, manage clients, and earn through escrow.', '₹3,499/mo'],
+            ['Business Growth', 'Run multiple automations and builder projects.', '₹3,999/mo'],
           ].map(([title, body, price], index) => (
-            <div key={title} className={`rounded-[20px] border p-6 ${index === 1 ? 'border-[#5B5EF7]/60 bg-[#5B5EF7]/10' : 'border-border bg-surface'}`}>
+            <div key={title} className={`rounded-[20px] border p-6 ${index === 2 ? 'border-[#5B5EF7]/60 bg-[#5B5EF7]/10' : 'border-border bg-surface'}`}>
               <p className="text-xl font-black text-text">{title}</p>
               <p className="mt-3 text-sm leading-6 text-text2">{body}</p>
               <p className="mt-6 text-3xl font-black text-text">{price}</p>
